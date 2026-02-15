@@ -1,0 +1,133 @@
+{
+  "kind": "build_request",
+  "title": "Health input app with tailored food recommendations",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a backend API that accepts a user's health inputs (age, weight, list of sicknesses/health conditions, and blood pressure) and returns a structured list of recommended foods tailored to those inputs.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "create a app where you can put your sicknesses, age, weight and stuff also with blood pressure and when you click a button labeled “Search Foods” it shows food that can help you with your sicknesses, blood pressure, and health"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes an update/query method (or methods) that takes: age, weight, sicknesses/conditions, and blood pressure values.",
+        "Backend returns a deterministic, typed response containing a list of recommended foods (at minimum: name and short explanation for why it was recommended).",
+        "The API returns a user-friendly error when required inputs are missing or invalid (e.g., negative age/weight, non-sensical blood pressure values)."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement backend recommendation logic that uses sickness/condition keywords and blood pressure categories (e.g., low/normal/elevated/high) to select foods and provide brief explanations per food item.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "shows food that can help you with your sicknesses, blood pressure, and health"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Recommendation results change based on different inputs (e.g., different conditions or blood pressure ranges yield different food lists).",
+        "Each recommended food includes an explanation that references the relevant input factor(s) (condition and/or blood pressure category).",
+        "If a user provides a condition that is not recognized, the backend still returns a safe default set of general healthy foods plus a note that some conditions were not recognized."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Build a frontend flow with a health input form (age, weight, sicknesses/health conditions, systolic and diastolic blood pressure) and a primary button labeled exactly “Search Foods” that triggers fetching recommendations and then displays the results.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "put your sicknesses, age, weight and stuff also with blood pressure",
+          "button labeled “Search Foods”"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The main form includes fields for: Age, Weight, Systolic BP, Diastolic BP, and Sicknesses/Health conditions (free text and/or tag input).",
+        "The primary call-to-action button text is exactly “Search Foods”.",
+        "Client-side validation prevents submission with empty required fields or obviously invalid numeric values and shows clear English error messages.",
+        "On submit, the UI shows a loading state and then renders the recommended foods returned by the backend."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Create a results view that displays recommended foods with explanations, and includes a clear English disclaimer that the app provides general wellness suggestions and is not medical advice.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "food that can help you with your sicknesses, blood pressure, and health"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Results are displayed as a readable list/cards with food name and explanation.",
+        "A disclaimer is visible on the results view (e.g., “This app provides general food suggestions and is not medical advice.”).",
+        "Users can easily go back and adjust inputs without losing usability (e.g., a Back/Edit Inputs button or link)."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Apply a cohesive, creative visual theme across the app (colors, typography, spacing, and component styles) appropriate for a health/nutrition tool, avoiding blue-and-purple as the primary palette.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "create a app ... health"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app has a consistent theme applied across input and results views (background, typography, buttons, and cards).",
+        "Primary palette is not dominated by blue and purple.",
+        "Layout is clean and accessible (clear labels, adequate contrast, readable font sizes)."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add generated static imagery for the app and render it from the frontend as static assets (do not serve images from the backend).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New images (from image requirements) are placed under frontend/public/assets/generated.",
+        "UI references these images via static paths and they render correctly in the browser.",
+        "No backend endpoints are added for image hosting/serving."
+      ]
+    }
+  ],
+  "constraints": [
+    "Use English for all user-facing text.",
+    "Backend must remain a single Motoko actor (no additional backend services).",
+    "Do not modify files under frontend/src/components/ui or any other immutable paths defined by the platform; compose those components instead.",
+    "Do not rely on external databases or third-party APIs for nutrition/medical data."
+  ],
+  "nonGoals": [
+    "Providing medical diagnosis or emergency guidance.",
+    "Integrating a comprehensive external food/nutrition database.",
+    "User accounts beyond what the template provides (no custom auth requirements).",
+    "Long-term tracking/analytics of historical measurements unless explicitly requested later."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Friendly flat illustration of assorted healthy foods (healthy-foods-hero.dim_1400x600.png)",
+      "Simple line icon of a heart with a fork (health-app-icon.dim_256x256.png)"
+    ],
+    "edits": []
+  }
+}

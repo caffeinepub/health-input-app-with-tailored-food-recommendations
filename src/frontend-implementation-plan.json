@@ -1,0 +1,117 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Health input app with tailored food recommendations (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-3",
+      "summary": "Create a health input form (age, weight, conditions, systolic/diastolic BP) with a primary “Search Foods” button that validates and fetches recommendations, showing loading and results.",
+      "acceptanceCriteria": [
+        "The main form includes fields for: Age, Weight, Systolic BP, Diastolic BP, and Sicknesses/Health conditions (free text and/or tag input).",
+        "The primary call-to-action button text is exactly “Search Foods”.",
+        "Client-side validation prevents submission with empty required fields or obviously invalid numeric values and shows clear English error messages.",
+        "On submit, the UI shows a loading state and then renders the recommended foods returned by the backend."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the main app view that renders the health input form and orchestrates the submit flow (validate → call backendInterface.getFoodRecommendations → display results). Use shadcn-ui components (e.g., Input, Textarea, Button) to implement consistent form controls and a primary button labeled exactly “Search Foods”. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/recommendations/useFoodRecommendations.ts",
+          "operation": "create",
+          "description": "Add a React hook (TypeScript, no JSX) that wraps the backend call to getFoodRecommendations and exposes loading/error states for the form submit flow (suitable for React Query usage already present in the app)."
+        },
+        {
+          "path": "frontend/src/features/recommendations/validation.ts",
+          "operation": "create",
+          "description": "Implement client-side validation helpers for required fields and sensible numeric ranges (age/weight positive; BP systolic/diastolic present and within reasonable bounds), returning clear English error messages for display in the UI."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Ensure the app bootstraps the newly created App component cleanly and that required providers remain intact; keep user-facing text in English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Add a results view showing recommended foods with explanations, a medical disclaimer, and an easy way to edit inputs.",
+      "acceptanceCriteria": [
+        "Results are displayed as a readable list/cards with food name and explanation.",
+        "A disclaimer is visible on the results view (e.g., “This app provides general food suggestions and is not medical advice.”).",
+        "Users can easily go back and adjust inputs without losing usability (e.g., a Back/Edit Inputs button or link)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/recommendations/ResultsView.tsx",
+          "operation": "create",
+          "description": "Create a results view component that renders the returned FoodRecommendation list as readable cards (food + explanation) and includes a clear English disclaimer that the app is not medical advice. Use shadcn-ui components (e.g., Card, Button, Alert) for layout and messaging. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the ResultsView into the main flow so that, after successful fetch, the results display replaces/appears below the form and includes an Edit Inputs/Back control that returns the user to the form with previous values preserved."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Apply a cohesive health/nutrition visual theme across the app, avoiding a blue/purple-dominated primary palette.",
+      "acceptanceCriteria": [
+        "The app has a consistent theme applied across input and results views (background, typography, buttons, and cards).",
+        "Primary palette is not dominated by blue and purple.",
+        "Layout is clean and accessible (clear labels, adequate contrast, readable font sizes)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Create global styling and theme tokens (e.g., CSS variables used by Tailwind/shadcn-ui) to establish a cohesive health/nutrition look (e.g., greens, warm neutrals) with accessible contrast and readable typography; ensure the primary palette is not dominated by blue/purple."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Adjust Tailwind theme extensions as needed to support the chosen non-blue/purple primary palette and consistent spacing/typography across form and results."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Apply the theme consistently in the app layout (page background, header/hero section, spacing) and ensure form/results components use the same design language via composed shadcn-ui components. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add and render generated static imagery from the frontend as static assets.",
+      "acceptanceCriteria": [
+        "New images (from image requirements) are placed under frontend/public/assets/generated.",
+        "UI references these images via static paths and they render correctly in the browser.",
+        "No backend endpoints are added for image hosting/serving."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/healthy-foods-hero.dim_1400x600.png",
+          "operation": "create",
+          "description": "Add the generated hero illustration asset at frontend/public/assets/generated/healthy-foods-hero.dim_1400x600.png for static serving by the frontend build."
+        },
+        {
+          "path": "frontend/public/assets/generated/health-app-icon.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated app icon asset at frontend/public/assets/generated/health-app-icon.dim_256x256.png for static serving by the frontend build."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Reference frontend/public/assets/generated/health-app-icon.dim_256x256.png as the site icon so it renders in the browser tab."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Render the hero image frontend/public/assets/generated/healthy-foods-hero.dim_1400x600.png in the app UI (e.g., in a top hero/header section attached to the existing main view) without introducing backend image serving."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "frontend/src/App.tsx": "Main application component that manages the health form and results view state, includes header with branding, hero section with generated image, and footer with attribution and social links.",
+  "frontend/src/components/HealthInputForm.tsx": "Health input form component with fields for age, weight, blood pressure, and health conditions (with tag-based input), includes validation and \"Search Foods\" button that triggers backend recommendations.",
+  "frontend/src/components/ResultsView.tsx": "Results display component showing personalized food recommendations as cards with explanations, includes health summary, medical disclaimer, and edit inputs button.",
+  "frontend/src/hooks/useQueries.ts": "React Query hook that wraps the backend getFoodRecommendations call with proper typing and error handling.",
+  "frontend/src/lib/validation.ts": "Client-side validation helper that checks all required health input fields for completeness and sensible numeric ranges, returning clear English error messages.",
+  "frontend/src/index.css": "Global styles with OKLCH color system using a health-focused palette of greens, warm earth tones, and coral accents (avoiding blue/purple dominance) for both light and dark modes.",
+  "frontend/tailwind.config.js": "Tailwind configuration extending the theme with custom font stack, health-themed color tokens, enhanced shadows, and consistent border radius values.",
+  "frontend/index.html": "HTML entry point with app icon reference, SEO-friendly title and meta description."
+}

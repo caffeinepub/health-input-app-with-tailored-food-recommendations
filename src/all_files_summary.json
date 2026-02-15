@@ -1,0 +1,18 @@
+{
+  "backend/main.mo": "Motoko backend actor providing blood pressure classification and food recommendation logic based on health conditions.",
+  "feature_evidence.json": "Feature evidence report mapping implemented features to frontend files, components, and test IDs.",
+  "frontend-file-summaries.txt": "Prewritten summaries describing the purpose of each frontend file in the project.",
+  "frontend/index.css": "Tailwind base styles defining a custom OKLCH color palette and theme variables for light and dark modes.",
+  "frontend/index.html": "HTML entrypoint setting metadata, favicon, and loading the React app.",
+  "frontend/src/App.tsx": "Main React component handling form state, results view toggling, and layout including hero, header, and footer.",
+  "frontend/src/components/HealthInputForm.tsx": "Form component collecting user health data, validating input, and triggering the recommendations query.",
+  "frontend/src/components/ResultsView.tsx": "Results component displaying health summary, recommended foods, condition badges, and a medical disclaimer.",
+  "frontend/src/hooks/useActor.ts": "Creates and manages a backend actor based on the current Internet Identity, refreshing dependent queries when the actor changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides an Internet Identity context with login, logout, and status handling using Dfinity AuthClient.",
+  "frontend/src/hooks/useQueries.ts": "Defines a mutation hook that calls the backend to fetch food recommendations using the current actor.",
+  "frontend/src/index.css": "Defines Tailwind base styles and custom OKLCH color variables for light and dark health-themed UI.",
+  "frontend/src/lib/validation.ts": "Validates health form inputs including age, weight, and blood pressure with range and logical checks.",
+  "frontend/src/main.tsx": "Bootstraps the React app with QueryClient and InternetIdentity providers and loads global styles.",
+  "frontend/tailwind.config.js": "Configures Tailwind theme extensions, custom colors sourced from CSS variables, plugins, and animations.",
+  "project_state.json": "Stores project metadata, feature status, requirements, and image needs for the health recommendation app."
+}
