@@ -7,10 +7,23 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface FoodRecommendation {
-    food: string;
-    explanation: string;
+export interface Dish {
+    name: string;
+    instructions: Array<string>;
+    nutritionSummary: NutritionSummary;
+    photoReference: string;
+    healthExplanation: string;
+    ingredients: Array<string>;
+}
+export interface NutritionSummary {
+    carbohydrates: bigint;
+    sodium: bigint;
+    fats: bigint;
+    calories: bigint;
+    protein: bigint;
 }
 export interface backendInterface {
-    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint): Promise<Array<FoodRecommendation>>;
+    addRecipe(name: string, photoReference: string, healthExplanation: string, ingredients: Array<string>, instructions: Array<string>, nutritionSummary: NutritionSummary): Promise<void>;
+    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>): Promise<Array<Dish>>;
+    getGreyZoneIngredients(): Promise<Array<string>>;
 }

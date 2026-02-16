@@ -1,14 +1,35 @@
 import Text "mo:core/Text";
+import Map "mo:core/Map";
+import Set "mo:core/Set";
 import Iter "mo:core/Iter";
 import Array "mo:core/Array";
-import List "mo:core/List";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
+  type Dish = {
+    name : Text;
+    photoReference : Text;
+    healthExplanation : Text;
+    ingredients : [Text];
+    instructions : [Text];
+    nutritionSummary : NutritionSummary;
+  };
+
+  type NutritionSummary = {
+    calories : Nat;
+    sodium : Nat;
+    protein : Nat;
+    carbohydrates : Nat;
+    fats : Nat;
+  };
+
   type HealthInput = {
     age : Nat;
     weight : Nat;
     healthConditions : [Text];
     bloodPressure : BloodPressureCategory;
+    allergies : [Text];
   };
 
   type BloodPressureCategory = {
@@ -18,78 +39,25 @@ actor {
     #high;
   };
 
-  type FoodRecommendation = {
-    food : Text;
-    explanation : Text;
-  };
+  let recipeDatabase = Map.empty<Text, Dish>();
 
-  func determineBloodPressureCategory(systolic : Nat, diastolic : Nat) : BloodPressureCategory {
-    if (systolic < 90 or diastolic < 60) { return #low };
-    if (systolic >= 90 and systolic <= 120 and diastolic >= 60 and diastolic <= 80) {
-      return #normal;
+  public shared ({ caller }) func addRecipe(
+    name : Text,
+    photoReference : Text,
+    healthExplanation : Text,
+    ingredients : [Text],
+    instructions : [Text],
+    nutritionSummary : NutritionSummary,
+  ) : async () {
+    let dish : Dish = {
+      name;
+      photoReference;
+      healthExplanation;
+      ingredients;
+      instructions;
+      nutritionSummary;
     };
-    if (systolic > 120 and systolic <= 140 or diastolic > 80 and diastolic <= 90) {
-      return #elevated;
-    };
-    #high;
-  };
-
-  func recommendFoods(healthConditions : [Text], bpCategory : BloodPressureCategory) : [FoodRecommendation] {
-    let recommendations = List.empty<(Text, Text)>();
-
-    for (condition in healthConditions.values()) {
-      switch (condition) {
-        case ("diabetes") {
-          recommendations.add(("Quinoa", "Quinoa helps regulate blood sugar levels."));
-          recommendations.add(("Berries", "Berries are low in sugar and high in antioxidants."));
-        };
-        case ("heart disease") {
-          recommendations.add(("Salmon", "Salmon contains healthy omega-3 fatty acids."));
-          recommendations.add(("Oats", "Oats help lower cholesterol levels."));
-        };
-        case ("anemia") {
-          recommendations.add(("Spinach", "Spinach is rich in iron and helps with anemia."));
-          recommendations.add(("Red meat", "Red meat is a good source of heme iron."));
-        };
-        case ("osteoporosis") {
-          recommendations.add(("Dairy products", "Dairy products are high in calcium for bone health."));
-          recommendations.add(("Leafy greens", "Leafy greens are rich in calcium and vitamin K."));
-        };
-        case ("hypertension") {
-          recommendations.add(("Low-sodium foods", "Low-sodium foods help manage high blood pressure."));
-          recommendations.add(("Bananas", "Bananas are a good source of potassium, which can lower blood pressure."));
-        };
-        case (_) {}; // Do nothing for unrecognized conditions
-      };
-    };
-
-    // Blood pressure food recommendations
-    let (food, explanation) = switch (bpCategory) {
-      case (#low) {
-        ("Salted nuts", "Salted nuts can help raise blood pressure due to their salt content.");
-      };
-      case (#high) {
-        (
-          "Leafy greens",
-          "Leafy greens are low in sodium and rich in potassium, ideal for high blood pressure.",
-        );
-      };
-      case (#elevated) {
-        (
-          "Berries/Low-fat dairy",
-          "Berries and dairy help maintain normal blood pressure",
-        );
-      };
-      case (#normal) {
-        (
-          "Balanced diet",
-          "Maintaining a balanced diet supports stable blood pressure.",
-        );
-      };
-    };
-    recommendations.add((food, explanation));
-
-    recommendations.toArray().map(func((food, explanation)) { { food; explanation } });
+    recipeDatabase.add(name, dish);
   };
 
   public query ({ caller }) func getFoodRecommendations(
@@ -98,8 +66,73 @@ actor {
     healthConditions : [Text],
     systolicBP : Nat,
     diastolicBP : Nat,
-  ) : async [FoodRecommendation] {
-    let bpCategory = determineBloodPressureCategory(systolicBP, diastolicBP);
-    recommendFoods(healthConditions, bpCategory);
+    allergies : [Text],
+  ) : async [Dish] {
+    if (allergies.size() == 0) {
+      // No allergies specified, return all recipes or a limited number if there are many
+      return getLimitedRecipes(50); // You can adjust this limit as needed
+    };
+
+    // Convert allergies to a lower-case Set for case-insensitive comparison
+    let allergySet = Set.fromArray(
+      allergies.map(func(a) { a.toLower() })
+    );
+
+    // Filter recipes that do not contain any of the specified allergens
+    let filteredRecipes = recipeDatabase.values().filter(
+      func(recipe) {
+        // Check if any ingredient in the recipe matches the allergies (case-insensitive)
+        let hasAllergy = recipe.ingredients.any(
+          func(ingredient) {
+            let lowerIngredient = ingredient.toLower();
+            switch (allergySet.contains(lowerIngredient)) {
+              case (true) { true };
+              case (false) {
+                // Also check if ingredient contains any allergy substring
+                allergies.any(
+                  func(allergy) {
+                    lowerIngredient.contains(#text(allergy.toLower()));
+                  }
+                );
+              };
+            };
+          }
+        );
+        not hasAllergy;
+      }
+    );
+
+    // Limit the number of results to 50
+    let limitedFilteredRecipes = filteredRecipes.toArray().sliceToArray(0, 50);
+
+    if (limitedFilteredRecipes.size() == 0) {
+      // If no recipes match after filtering, return empty array
+      [];
+    } else {
+      limitedFilteredRecipes;
+    };
+  };
+
+  func getLimitedRecipes(limit : Nat) : [Dish] {
+    let allRecipes = recipeDatabase.values().toArray();
+    if (allRecipes.size() <= limit) {
+      allRecipes;
+    } else {
+      allRecipes.sliceToArray(0, limit);
+    };
+  };
+
+  public query ({ caller }) func getGreyZoneIngredients() : async [Text] {
+    [
+      "Eggs",
+      "Wheat",
+      "Peanuts",
+      "Tree Nuts",
+      "Soy",
+      "Fish",
+      "Shellfish",
+      "Mushrooms",
+      "Strawberries",
+    ];
   };
 };

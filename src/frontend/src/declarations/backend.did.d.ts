@@ -10,12 +10,31 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface FoodRecommendation { 'food' : string, 'explanation' : string }
+export interface Dish {
+  'name' : string,
+  'instructions' : Array<string>,
+  'nutritionSummary' : NutritionSummary,
+  'photoReference' : string,
+  'healthExplanation' : string,
+  'ingredients' : Array<string>,
+}
+export interface NutritionSummary {
+  'carbohydrates' : bigint,
+  'sodium' : bigint,
+  'fats' : bigint,
+  'calories' : bigint,
+  'protein' : bigint,
+}
 export interface _SERVICE {
-  'getFoodRecommendations' : ActorMethod<
-    [bigint, bigint, Array<string>, bigint, bigint],
-    Array<FoodRecommendation>
+  'addRecipe' : ActorMethod<
+    [string, string, string, Array<string>, Array<string>, NutritionSummary],
+    undefined
   >,
+  'getFoodRecommendations' : ActorMethod<
+    [bigint, bigint, Array<string>, bigint, bigint, Array<string>],
+    Array<Dish>
+  >,
+  'getGreyZoneIngredients' : ActorMethod<[], Array<string>>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

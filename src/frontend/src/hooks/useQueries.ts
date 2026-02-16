@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { FoodRecommendation } from '../backend';
+import type { Dish } from '../backend';
 
 interface GetFoodRecommendationsParams {
   age: bigint;
@@ -8,12 +8,13 @@ interface GetFoodRecommendationsParams {
   healthConditions: string[];
   systolicBP: bigint;
   diastolicBP: bigint;
+  allergies: string[];
 }
 
 export function useFoodRecommendations() {
   const { actor } = useActor();
 
-  return useMutation<FoodRecommendation[], Error, GetFoodRecommendationsParams>({
+  return useMutation<Dish[], Error, GetFoodRecommendationsParams>({
     mutationFn: async (params) => {
       if (!actor) {
         throw new Error('Backend actor not initialized');
@@ -23,7 +24,8 @@ export function useFoodRecommendations() {
         params.weight,
         params.healthConditions,
         params.systolicBP,
-        params.diastolicBP
+        params.diastolicBP,
+        params.allergies
       );
     },
   });

@@ -1,133 +1,106 @@
 {
   "kind": "build_request",
-  "title": "Health input app with tailored food recommendations",
+  "title": "Fix empty recommendations, add “No allergies”, and expand selectable health conditions",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Create a backend API that accepts a user's health inputs (age, weight, list of sicknesses/health conditions, and blood pressure) and returns a structured list of recommended foods tailored to those inputs.",
+      "id": "REQ-13",
+      "text": "Ensure the backend returns non-empty food recommendations by seeding the in-canister recipe database with a built-in set of real dishes available immediately after deployment (no manual addRecipe calls required).",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "create a app where you can put your sicknesses, age, weight and stuff also with blood pressure and when you click a button labeled “Search Foods” it shows food that can help you with your sicknesses, blood pressure, and health"
+          "It shows no food"
         ]
       },
       "acceptanceCriteria": [
-        "Backend exposes an update/query method (or methods) that takes: age, weight, sicknesses/conditions, and blood pressure values.",
-        "Backend returns a deterministic, typed response containing a list of recommended foods (at minimum: name and short explanation for why it was recommended).",
-        "The API returns a user-friendly error when required inputs are missing or invalid (e.g., negative age/weight, non-sensical blood pressure values)."
+        "Calling getFoodRecommendations with valid inputs and an empty allergies list returns between 1 and 5 Dish items (unless the dataset truly contains fewer than 1 dish, which must not happen after seeding).",
+        "Seeded dishes include the full Dish fields already used by the frontend: name, photoReference (can be empty to trigger fallback), healthExplanation, ingredients, instructions, nutritionSummary (calories, sodium, protein, carbohydrates, fats).",
+        "The seeded dataset is large enough to avoid frequent empty results for typical inputs (target at least ~30 dishes, within code-size limits)."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Implement backend recommendation logic that uses sickness/condition keywords and blood pressure categories (e.g., low/normal/elevated/high) to select foods and provide brief explanations per food item.",
+      "id": "REQ-14",
+      "text": "Add a user-facing “No allergies” option in the Allergies section that lets users explicitly indicate they have no allergies, clears any selected/typed allergies, and sends an empty allergies list to the backend recommendation query.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "can you add an option of no allergies?"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Allergies UI includes a clearly labeled option: \"No allergies\".",
+        "When \"No allergies\" is selected, any existing allergy tags are cleared and allergen quick-add buttons are unselected.",
+        "Submitting the form with \"No allergies\" selected results in the request sending allergies: [] (an empty array).",
+        "If the user adds any allergy after selecting \"No allergies\", the UI automatically unselects \"No allergies\" (so the state is never contradictory)."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Expand the Health Conditions input to support selecting from a broad, built-in list of common health conditions (while still allowing custom conditions to be added), so users do not need to type most conditions manually.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Also add like all the Health conditions you can"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Health Conditions UI includes a selectable list of many common conditions (significantly more than the current helper text), presented in a way that is usable on mobile (e.g., searchable list and/or quick-add chips/buttons).",
+        "Users can still add a custom condition not present in the list.",
+        "Selected health conditions are shown as removable tags (as they are today).",
+        "Selected conditions are submitted to the backend in the existing healthConditions array field."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Make allergy filtering in getFoodRecommendations robust to common user input variations by applying case-insensitive matching between user allergies and dish ingredients, and ensure that an empty allergies list disables allergen filtering.",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "shows food that can help you with your sicknesses, blood pressure, and health"
+          "It shows no food, and can you add an option of no allergies?"
         ]
       },
       "acceptanceCriteria": [
-        "Recommendation results change based on different inputs (e.g., different conditions or blood pressure ranges yield different food lists).",
-        "Each recommended food includes an explanation that references the relevant input factor(s) (condition and/or blood pressure category).",
-        "If a user provides a condition that is not recognized, the backend still returns a safe default set of general healthy foods plus a note that some conditions were not recognized."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Build a frontend flow with a health input form (age, weight, sicknesses/health conditions, systolic and diastolic blood pressure) and a primary button labeled exactly “Search Foods” that triggers fetching recommendations and then displays the results.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "put your sicknesses, age, weight and stuff also with blood pressure",
-          "button labeled “Search Foods”"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The main form includes fields for: Age, Weight, Systolic BP, Diastolic BP, and Sicknesses/Health conditions (free text and/or tag input).",
-        "The primary call-to-action button text is exactly “Search Foods”.",
-        "Client-side validation prevents submission with empty required fields or obviously invalid numeric values and shows clear English error messages.",
-        "On submit, the UI shows a loading state and then renders the recommended foods returned by the backend."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Create a results view that displays recommended foods with explanations, and includes a clear English disclaimer that the app provides general wellness suggestions and is not medical advice.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "food that can help you with your sicknesses, blood pressure, and health"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Results are displayed as a readable list/cards with food name and explanation.",
-        "A disclaimer is visible on the results view (e.g., “This app provides general food suggestions and is not medical advice.”).",
-        "Users can easily go back and adjust inputs without losing usability (e.g., a Back/Edit Inputs button or link)."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Apply a cohesive, creative visual theme across the app (colors, typography, spacing, and component styles) appropriate for a health/nutrition tool, avoiding blue-and-purple as the primary palette.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "create a app ... health"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The app has a consistent theme applied across input and results views (background, typography, buttons, and cards).",
-        "Primary palette is not dominated by blue and purple.",
-        "Layout is clean and accessible (clear labels, adequate contrast, readable font sizes)."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Add generated static imagery for the app and render it from the frontend as static assets (do not serve images from the backend).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ]
-      },
-      "acceptanceCriteria": [
-        "New images (from image requirements) are placed under frontend/public/assets/generated.",
-        "UI references these images via static paths and they render correctly in the browser.",
-        "No backend endpoints are added for image hosting/serving."
+        "If allergies is an empty array, getFoodRecommendations does not filter out dishes based on ingredients.",
+        "Allergy filtering compares normalized values (at minimum: case-insensitive) so that inputs like \"eggs\" correctly match ingredients like \"Eggs\".",
+        "With a seeded dataset, providing a common allergy (e.g., \"eggs\") reduces results by filtering dishes containing that allergen, rather than returning an empty list due to casing mismatches."
       ]
     }
   ],
   "constraints": [
-    "Use English for all user-facing text.",
-    "Backend must remain a single Motoko actor (no additional backend services).",
-    "Do not modify files under frontend/src/components/ui or any other immutable paths defined by the platform; compose those components instead.",
-    "Do not rely on external databases or third-party APIs for nutrition/medical data."
+    "Backend must remain a single Motoko actor in backend/main.mo.",
+    "Do not edit frontend files in immutablePaths (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui).",
+    "Use English for any user-facing text.",
+    "Do not serve images from the backend; dish photos must continue to be frontend static assets and gracefully fall back when missing."
   ],
   "nonGoals": [
-    "Providing medical diagnosis or emergency guidance.",
-    "Integrating a comprehensive external food/nutrition database.",
-    "User accounts beyond what the template provides (no custom auth requirements).",
-    "Long-term tracking/analytics of historical measurements unless explicitly requested later."
+    "Do not add third-party authentication beyond Internet Identity.",
+    "Do not add external databases or non-Internet-Computer backend services.",
+    "Do not claim medical accuracy; the app remains general wellness guidance (not medical advice)."
   ],
   "imageRequirements": {
-    "required": [
-      "Friendly flat illustration of assorted healthy foods (healthy-foods-hero.dim_1400x600.png)",
-      "Simple line icon of a heart with a fork (health-app-icon.dim_256x256.png)"
-    ],
+    "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

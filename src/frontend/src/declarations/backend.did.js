@@ -8,33 +8,95 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const FoodRecommendation = IDL.Record({
-  'food' : IDL.Text,
-  'explanation' : IDL.Text,
+export const NutritionSummary = IDL.Record({
+  'carbohydrates' : IDL.Nat,
+  'sodium' : IDL.Nat,
+  'fats' : IDL.Nat,
+  'calories' : IDL.Nat,
+  'protein' : IDL.Nat,
+});
+export const Dish = IDL.Record({
+  'name' : IDL.Text,
+  'instructions' : IDL.Vec(IDL.Text),
+  'nutritionSummary' : NutritionSummary,
+  'photoReference' : IDL.Text,
+  'healthExplanation' : IDL.Text,
+  'ingredients' : IDL.Vec(IDL.Text),
 });
 
 export const idlService = IDL.Service({
+  'addRecipe' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Vec(IDL.Text),
+        IDL.Vec(IDL.Text),
+        NutritionSummary,
+      ],
+      [],
+      [],
+    ),
   'getFoodRecommendations' : IDL.Func(
-      [IDL.Nat, IDL.Nat, IDL.Vec(IDL.Text), IDL.Nat, IDL.Nat],
-      [IDL.Vec(FoodRecommendation)],
+      [
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Vec(IDL.Text),
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Vec(IDL.Text),
+      ],
+      [IDL.Vec(Dish)],
       ['query'],
     ),
+  'getGreyZoneIngredients' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const FoodRecommendation = IDL.Record({
-    'food' : IDL.Text,
-    'explanation' : IDL.Text,
+  const NutritionSummary = IDL.Record({
+    'carbohydrates' : IDL.Nat,
+    'sodium' : IDL.Nat,
+    'fats' : IDL.Nat,
+    'calories' : IDL.Nat,
+    'protein' : IDL.Nat,
+  });
+  const Dish = IDL.Record({
+    'name' : IDL.Text,
+    'instructions' : IDL.Vec(IDL.Text),
+    'nutritionSummary' : NutritionSummary,
+    'photoReference' : IDL.Text,
+    'healthExplanation' : IDL.Text,
+    'ingredients' : IDL.Vec(IDL.Text),
   });
   
   return IDL.Service({
+    'addRecipe' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Vec(IDL.Text),
+          IDL.Vec(IDL.Text),
+          NutritionSummary,
+        ],
+        [],
+        [],
+      ),
     'getFoodRecommendations' : IDL.Func(
-        [IDL.Nat, IDL.Nat, IDL.Vec(IDL.Text), IDL.Nat, IDL.Nat],
-        [IDL.Vec(FoodRecommendation)],
+        [
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Vec(IDL.Text),
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Vec(IDL.Text),
+        ],
+        [IDL.Vec(Dish)],
         ['query'],
       ),
+    'getGreyZoneIngredients' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   });
 };
 

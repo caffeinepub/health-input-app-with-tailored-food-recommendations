@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { HealthInputForm } from './components/HealthInputForm';
 import { ResultsView } from './components/ResultsView';
-import type { FoodRecommendation } from './backend';
+import type { Dish } from './backend';
 import { Heart } from 'lucide-react';
 import { SiX, SiFacebook, SiLinkedin } from 'react-icons/si';
 
@@ -11,6 +11,7 @@ export type HealthFormData = {
   healthConditions: string[];
   systolicBP: string;
   diastolicBP: string;
+  allergies: string[];
 };
 
 function App() {
@@ -20,11 +21,12 @@ function App() {
     healthConditions: [],
     systolicBP: '',
     diastolicBP: '',
+    allergies: [],
   });
-  const [results, setResults] = useState<FoodRecommendation[] | null>(null);
+  const [results, setResults] = useState<Dish[] | null>(null);
   const [showResults, setShowResults] = useState(false);
 
-  const handleFormSubmit = (data: HealthFormData, recommendations: FoodRecommendation[]) => {
+  const handleFormSubmit = (data: HealthFormData, recommendations: Dish[]) => {
     setFormData(data);
     setResults(recommendations);
     setShowResults(true);

@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-build-a-frontend-flow-with-a-health-input-form-age-weight-sicknesses-health-conditions-systolic-and-diastolic-blood-pressure-and-a-primary-button-labeled-exactly-search-foods-that-triggers-fetching-recommendations-and-then-displays-the-results",
-      "featureTitle": "Build a frontend flow with a health input form (age, weight, sicknesses/health conditions, systolic and diastolic blood pressure) and a primary button labeled exactly “Search Foods” that triggers fetching recommendations and then displays the results.",
+      "featureId": "feature-add-a-user-facing-no-allergies-option-in-the-allergies-section-that-lets-users-explicitly-indicate-they-have-no-allergies-clears-any-selected-typed-allergies-and-sends-an-empty-allergies-list-to-the-backend-recommendation-query",
+      "featureTitle": "Add a user-facing “No allergies” option in the Allergies section that lets users explicitly indicate they have no allergies, clears any selected/typed allergies, and sends an empty allergies list to the backend recommendation query.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/main.tsx"
+        "frontend/src/components/HealthInputForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,15 +15,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-14"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-a-results-view-that-displays-recommended-foods-with-explanations-and-includes-a-clear-english-disclaimer-that-the-app-provides-general-wellness-suggestions-and-is-not-medical-advice",
-      "featureTitle": "Create a results view that displays recommended foods with explanations, and includes a clear English disclaimer that the app provides general wellness suggestions and is not medical advice.",
+      "featureId": "feature-expand-the-health-conditions-input-to-support-selecting-from-a-broad-built-in-list-of-common-health-conditions-while-still-allowing-custom-conditions-to-be-added-so-users-do-not-need-to-type-most-conditions-manually",
+      "featureTitle": "Expand the Health Conditions input to support selecting from a broad, built-in list of common health conditions (while still allowing custom conditions to be added), so users do not need to type most conditions manually.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/components/HealthInputForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -34,46 +33,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-apply-a-cohesive-creative-visual-theme-across-the-app-colors-typography-spacing-and-component-styles-appropriate-for-a-health-nutrition-tool-avoiding-blue-and-purple-as-the-primary-palette",
-      "featureTitle": "Apply a cohesive, creative visual theme across the app (colors, typography, spacing, and component styles) appropriate for a health/nutrition tool, avoiding blue-and-purple as the primary palette.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-generated-static-imagery-for-the-app-and-render-it-from-the-frontend-as-static-assets-do-not-serve-images-from-the-backend",
-      "featureTitle": "Add generated static imagery for the app and render it from the frontend as static assets (do not serve images from the backend).",
-      "files": [
-        "frontend/index.html",
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
+        "REQ-15"
       ],
       "confidence": "high"
     }

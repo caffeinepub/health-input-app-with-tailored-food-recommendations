@@ -89,26 +89,67 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface FoodRecommendation {
-    food: string;
-    explanation: string;
+export interface Dish {
+    name: string;
+    instructions: Array<string>;
+    nutritionSummary: NutritionSummary;
+    photoReference: string;
+    healthExplanation: string;
+    ingredients: Array<string>;
+}
+export interface NutritionSummary {
+    carbohydrates: bigint;
+    sodium: bigint;
+    fats: bigint;
+    calories: bigint;
+    protein: bigint;
 }
 export interface backendInterface {
-    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint): Promise<Array<FoodRecommendation>>;
+    addRecipe(name: string, photoReference: string, healthExplanation: string, ingredients: Array<string>, instructions: Array<string>, nutritionSummary: NutritionSummary): Promise<void>;
+    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>): Promise<Array<Dish>>;
+    getGreyZoneIngredients(): Promise<Array<string>>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async getFoodRecommendations(arg0: bigint, arg1: bigint, arg2: Array<string>, arg3: bigint, arg4: bigint): Promise<Array<FoodRecommendation>> {
+    async addRecipe(arg0: string, arg1: string, arg2: string, arg3: Array<string>, arg4: Array<string>, arg5: NutritionSummary): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4);
+                const result = await this.actor.addRecipe(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4);
+            const result = await this.actor.addRecipe(arg0, arg1, arg2, arg3, arg4, arg5);
+            return result;
+        }
+    }
+    async getFoodRecommendations(arg0: bigint, arg1: bigint, arg2: Array<string>, arg3: bigint, arg4: bigint, arg5: Array<string>): Promise<Array<Dish>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5);
+            return result;
+        }
+    }
+    async getGreyZoneIngredients(): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getGreyZoneIngredients();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getGreyZoneIngredients();
             return result;
         }
     }

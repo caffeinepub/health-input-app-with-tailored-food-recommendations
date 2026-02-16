@@ -1,14 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Let users enter basic health inputs and receive tailored food recommendations with brief explanations.
+**Goal:** Ensure food recommendations are never empty after deployment, improve allergy handling (including a “No allergies” option), and make health condition selection easier with a broad built-in list.
 
 **Planned changes:**
-- Build a single-backend API endpoint that accepts age, weight, health conditions, and systolic/diastolic blood pressure, and returns a deterministic typed list of recommended foods (name + explanation) with user-friendly validation errors.
-- Implement backend recommendation logic using condition keywords and blood-pressure categories (low/normal/elevated/high), including safe default recommendations and a note for unrecognized conditions.
-- Create a frontend health input form (Age, Weight, Systolic BP, Diastolic BP, Sicknesses/Health conditions) with client-side validation and a primary button labeled exactly “Search Foods”.
-- Add a results view that displays recommendations as readable list/cards, includes a clear disclaimer that it’s not medical advice, and allows users to go back/edit inputs.
-- Apply a cohesive health/nutrition visual theme (not primarily blue/purple) across the app.
-- Add generated static images under `frontend/public/assets/generated` and reference them via static paths from the frontend (no backend image hosting).
+- Seed the backend’s in-canister recipe database with a built-in set of real dishes so recommendations are available immediately after deployment.
+- Make backend allergy filtering case-insensitive and ensure an empty allergies list disables allergen filtering.
+- Add a “No allergies” option in the Allergies UI that clears selected/typed allergies and submits an empty allergies array.
+- Expand the Health Conditions UI to include a broad selectable list of common conditions (mobile-usable), while still supporting custom condition entry and tag-style selection/removal.
 
-**User-visible outcome:** Users can enter their age, weight, conditions, and blood pressure, click “Search Foods”, and see a themed results page listing recommended foods with explanations and a visible not-medical-advice disclaimer, with an option to edit inputs.
+**User-visible outcome:** Users will see 1–5 food recommendations right away, can explicitly choose “No allergies” to avoid accidental filtering, and can quickly select common health conditions without needing to type most of them manually.

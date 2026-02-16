@@ -1,70 +1,41 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T18:52:58.072Z",
-  "summary": "Implements core frontend flow and backend query for food recommendations, plus theming and UI structure. However, backend lacks required validation/error handling and unrecognized-condition note behavior, and the required generated image assets are not present in the diff (only referenced). Also includes additional authentication/social UI not requested in the BuildRequest.",
+  "generatedAt": "2026-02-15T19:53:41.051Z",
+  "summary": "Frontend changes appear to add a “No allergies” option and a large selectable health-conditions list (with custom entries). Backend changes add case-insensitive allergy filtering and a migration-based recipe initialization, but the backend still returns up to 50 dishes (not 1–5) and the seeded recipes include external image URLs, which violates the constraint that the backend must not serve images and photos must be frontend static assets.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Backend must return a user-friendly error when required inputs are missing or invalid (e.g., negative age/weight, non-sensical blood pressure values).",
-      "reason": "The backend method `getFoodRecommendations` accepts only `Nat` inputs (cannot represent negatives) and contains no explicit input validation or error-return mechanism; it always returns `[FoodRecommendation]` and never returns/throws a user-friendly error based on invalid/missing inputs.",
+      "id": "REQ-13",
+      "requirement": "Seed the in-canister recipe database so getFoodRecommendations (with empty allergies list) returns between 1 and 5 Dish items immediately after deployment, with a sufficiently large dataset (~30 dishes) and full Dish fields.",
+      "reason": "Although a migration module initializes recipes when the database is empty, getFoodRecommendations returns up to 50 items (and returns all recipes when allergies is empty via getLimitedRecipes(50)), which does not meet the 1–5 items acceptance criteria. Also, the seeded dataset size shown in the diff snippet appears to be ~22 recipes (and the file is truncated), so it is not clearly meeting the ~30-dish target based on available evidence.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "If a user provides a condition that is not recognized, the backend still returns a safe default set of general healthy foods plus a note that some conditions were not recognized.",
-      "reason": "Unrecognized conditions are explicitly ignored (`case (_) {}; // Do nothing for unrecognized conditions`) and there is no returned note about unrecognized conditions. Also no explicit default healthy-food set is added when conditions are unrecognized/empty (beyond a single BP-based recommendation).",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Place new required images under `frontend/public/assets/generated` and render them via static paths.",
-      "reason": "The UI references `/assets/generated/healthy-foods-hero.dim_1400x600.png` and `/assets/generated/health-app-icon.dim_256x256.png`, but the diff summary shows no added image files under `frontend/public/assets/generated`, so the required static assets themselves are not implemented in the diff.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend/index.html"
+        "backend/main.mo (getFoodRecommendations returns getLimitedRecipes(50) when allergies.size()==0; filtered results sliced to 0..50)",
+        "backend/migration.mo (initializeRecipes list shows ~22 entries in snippet; file truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Internet Identity authentication provider/hooks and actor recreation tied to identity changes.",
-      "reason": "BuildRequest explicitly states no custom auth requirements beyond what the template provides; the diff adds an Internet Identity provider and related hooks/configured actor selection, which is not requested by any REQ.",
+      "description": "Backend seeds dish photoReference values with external URL strings (e.g., shorturl.at links).",
+      "reason": "The BuildRequest constraint explicitly says not to serve images from the backend and that dish photos must remain frontend static assets (with graceful fallback). Seeding external URLs from the backend conflicts with that constraint; photoReference should be empty (to trigger fallback) or reference frontend static assets, not backend-served/external images.",
       "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts",
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/main.tsx"
+        "backend/migration.mo (e.g., defaultSalad photoReference = \"https://shorturl.at/cmHKT\"; chickenStirFry photoReference = \"https://shorturl.at/qCJS1\"; oatPancakes, veganChili, etc.)"
       ]
     },
     {
-      "description": "Footer social links/icons (X/Facebook/LinkedIn) and related branding extras.",
-      "reason": "Not requested in any requirement; BuildRequest focuses on health input, recommendations, results/disclaimer, theme, and static images.",
+      "description": "Backend recommendation limit changed/implemented as 50 items returned rather than 1–5 items.",
+      "reason": "REQ-13 acceptance criteria call for getFoodRecommendations to return between 1 and 5 Dish items for valid inputs (with seeded data). Returning up to 50 is not requested and conflicts with the stated acceptance criteria.",
       "evidence": [
-        "frontend/src/App.tsx"
+        "backend/main.mo (getLimitedRecipes(50); filtered results slicedToArray(0, 50))"
       ]
     }
   ],
-  "confidence": 0.72,
+  "confidence": 0.74,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
     "frontend/src/components/HealthInputForm.tsx",
-    "frontend/src/components/ResultsView.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/lib/validation.ts",
-    "frontend/src/main.tsx",
-    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }
