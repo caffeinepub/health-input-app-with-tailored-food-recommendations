@@ -1,12 +1,13 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 17,
-  "summary": "Build a mobile health-focused app where users enter age, weight, blood pressure, health conditions (from an expanded selectable list), allergies (including a “No allergies” option), and optionally a favorite food, then tap a “Search Foods” button to receive 1–5 allergen-safe food recommendations (including a “Star Meal” that highlights the user’s favorite food) with photos, health explanations, ingredients, cooking steps, nutrition summaries, and a medical disclaimer.",
+  "projectStateVersion": 19,
+  "summary": "Build a mobile health-focused app where users enter age, weight, blood pressure, health conditions (from an expanded selectable list), allergies (including a “No allergies” option), and optionally a favorite food, then tap a “Search Foods” button to receive 1–5 allergen-safe food recommendations (including a “Star Meal” that highlights the user’s favorite food) with photos, health explanations, ingredients, cooking steps, nutrition summaries, a medical disclaimer, and a user-controlled Spanish translation toggle via a “Cambiar A Español” button.",
   "architectural_notes": [
     "Need a strategy for dish photos in results (e.g., generated/static assets vs external image URLs) consistent with 'do not serve images from backend' constraint.",
     "Backend currently has an empty in-memory recipe database; add a seed dataset (and consider a scalable storage approach later) so recommendations can be returned.",
     "Decide on and maintain a canonical, expanded health-conditions list for the frontend (and how it maps to backend keywords used in recommendation logic).",
-    "If adding a soundtrack, decide how audio assets are packaged/served (e.g., frontend static assets) and ensure user controls (mute/volume) and autoplay restrictions are handled."
+    "If adding a soundtrack, decide how audio assets are packaged/served (e.g., frontend static assets) and ensure user controls (mute/volume) and autoplay restrictions are handled.",
+    "Decide i18n approach for English/Spanish UI text (e.g., translation dictionary + language toggle state persisted locally) and ensure medical disclaimer and all user-facing strings are translated consistently."
   ],
   "known_issues": [
     "Results page shows no food options because the backend recipe/food dataset is empty (no recipes are being added to the database).",
@@ -175,6 +176,46 @@
         "REQ-29"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-language-toggle-control-to-the-app-ui-with-a-button-labeled-exactly-cambiar-a-espa-ol-that-switches-the-app-s-ui-language-from-english-to-spanish-when-activated",
+      "title": "Add a language toggle control to the app UI with a button labeled exactly “Cambiar A Español” that switches the app’s UI language from English to Spanish when activated.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-simple-in-app-localization-mechanism-no-external-translation-services-and-translate-all-user-facing-ui-strings-currently-hard-coded-in-the-frontend-into-spanish-including-at-minimum-strings-in-frontend-src-app-tsx-frontend-src-components-healthinputform-tsx-frontend-src-components-resultsview-tsx-and-frontend-src-components-soundtrackcontrols-tsx",
+      "title": "Implement a simple in-app localization mechanism (no external translation services) and translate all user-facing UI strings currently hard-coded in the frontend into Spanish, including (at minimum) strings in `frontend/src/App.tsx`, `frontend/src/components/HealthInputForm.tsx`, `frontend/src/components/ResultsView.tsx`, and `frontend/src/components/SoundtrackControls.tsx`.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-the-language-toggle-behavior-for-returning-to-english-when-the-current-language-is-spanish-provide-a-visible-control-that-switches-the-ui-back-to-english",
+      "title": "Define the language-toggle behavior for returning to English: when the current language is Spanish, provide a visible control that switches the UI back to English.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-user-s-language-selection-in-local-storage-so-the-chosen-language-remains-consistent-after-a-page-refresh",
+      "title": "Persist the user’s language selection in local storage so the chosen language remains consistent after a page refresh.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-do-not-attempt-to-automatically-translate-backend-provided-recipe-content-e-g-dish-names-ingredient-lists-instructions-and-health-explanations-unless-explicit-spanish-equivalents-are-available-in-the-data-the-language-toggle-should-primarily-affect-the-frontend-ui-chrome-and-static-strings",
+      "title": "Do not attempt to automatically translate backend-provided recipe content (e.g., dish names, ingredient lists, instructions, and health explanations) unless explicit Spanish equivalents are available in the data; the language toggle should primarily affect the frontend UI chrome and static strings.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -332,6 +373,12 @@
       "reqIds": [
         "REQ-28"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Add a “Cambiar A Español” button that translates the app’s user-facing text to Spanish (language toggle)",
+      "reqIds": [],
       "status": "pending"
     }
   ],

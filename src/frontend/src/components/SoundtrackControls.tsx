@@ -5,8 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Music, Volume2, VolumeX, Play, Pause, AlertCircle } from 'lucide-react';
 import { useSoundtrackPreferences } from '../hooks/useSoundtrackPreferences';
+import { useI18n } from '../hooks/useI18n';
 
 export function SoundtrackControls() {
+  const { t } = useI18n();
   const { preferences, setEnabled, setVolume, toggleMuted } = useSoundtrackPreferences();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,7 +23,7 @@ export function SoundtrackControls() {
       audio.addEventListener('pause', () => setIsPlaying(false));
       audio.addEventListener('ended', () => setIsPlaying(false));
       audio.addEventListener('error', () => {
-        setError('Unable to load audio file. Please check your connection.');
+        setError(t('audioLoadError'));
         setIsPlaying(false);
       });
       
@@ -36,7 +38,7 @@ export function SoundtrackControls() {
         audioRef.current.removeEventListener('ended', () => setIsPlaying(false));
       }
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -60,7 +62,7 @@ export function SoundtrackControls() {
       }
     } catch (err) {
       console.error('Playback error:', err);
-      setError('Unable to play audio. Your browser may have blocked autoplay.');
+      setError(t('audioPlayError'));
       setEnabled(false);
       setIsPlaying(false);
     }
@@ -77,7 +79,7 @@ export function SoundtrackControls() {
         size="icon"
         onClick={handleTogglePlay}
         className="h-9 w-9"
-        aria-label={isPlaying ? 'Pause music' : 'Play music'}
+        aria-label={isPlaying ? t('pauseMusic') : t('playMusic')}
       >
         {isPlaying ? (
           <Pause className="h-4 w-4" />
@@ -92,7 +94,7 @@ export function SoundtrackControls() {
             variant="ghost"
             size="icon"
             className="h-9 w-9"
-            aria-label="Volume controls"
+            aria-label={t('volumeControls')}
           >
             <Music className="h-4 w-4" />
           </Button>
@@ -106,13 +108,13 @@ export function SoundtrackControls() {
               </Alert>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Volume</span>
+              <span className="text-sm font-medium">{t('volume')}</span>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleMuted}
                 className="h-8 w-8"
-                aria-label={preferences.muted ? 'Unmute' : 'Mute'}
+                aria-label={preferences.muted ? t('unmute') : t('mute')}
               >
                 {preferences.muted ? (
                   <VolumeX className="h-4 w-4" />
@@ -135,7 +137,7 @@ export function SoundtrackControls() {
             </div>
             <p className="text-xs text-muted-foreground">
               {preferences.muted
-                ? 'Muted'
+                ? t('muted')
                 : `${Math.round(preferences.volume * 100)}%`}
             </p>
           </div>

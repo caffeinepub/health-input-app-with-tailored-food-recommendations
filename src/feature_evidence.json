@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-new-optional-favorite-food-text-input-to-the-health-input-form-so-a-user-can-enter-their-favorite-food-before-pressing-the-existing-primary-button-labeled-exactly-search-foods",
-      "featureTitle": "Add a new optional \"Favorite food\" text input to the health input form so a user can enter their favorite food before pressing the existing primary button labeled exactly “Search Foods”.",
+      "featureId": "feature-add-a-language-toggle-control-to-the-app-ui-with-a-button-labeled-exactly-cambiar-a-espa-ol-that-switches-the-app-s-ui-language-from-english-to-spanish-when-activated",
+      "featureTitle": "Add a language toggle control to the app UI with a button labeled exactly “Cambiar A Español” that switches the app’s UI language from English to Spanish when activated.",
       "files": [
-        "frontend/src/components/HealthInputForm.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/LanguageToggle.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -15,17 +16,22 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-26"
+        "REQ-30"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-extend-the-frontend-form-data-model-and-recommendation-request-to-include-an-optional-favoritefood-string-and-update-the-backend-canister-method-signature-used-by-the-frontend-to-accept-this-new-parameter-when-fetching-recommendations",
-      "featureTitle": "Extend the frontend form data model and recommendation request to include an optional `favoriteFood` string, and update the backend canister method signature used by the frontend to accept this new parameter when fetching recommendations.",
+      "featureId": "feature-implement-a-simple-in-app-localization-mechanism-no-external-translation-services-and-translate-all-user-facing-ui-strings-currently-hard-coded-in-the-frontend-into-spanish-including-at-minimum-strings-in-frontend-src-app-tsx-frontend-src-components-healthinputform-tsx-frontend-src-components-resultsview-tsx-and-frontend-src-components-soundtrackcontrols-tsx",
+      "featureTitle": "Implement a simple in-app localization mechanism (no external translation services) and translate all user-facing UI strings currently hard-coded in the frontend into Spanish, including (at minimum) strings in `frontend/src/App.tsx`, `frontend/src/components/HealthInputForm.tsx`, `frontend/src/components/ResultsView.tsx`, and `frontend/src/components/SoundtrackControls.tsx`.",
       "files": [
         "frontend/src/App.tsx",
         "frontend/src/components/HealthInputForm.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/ResultsView.tsx",
+        "frontend/src/components/SoundtrackControls.tsx",
+        "frontend/src/hooks/useI18n.ts",
+        "frontend/src/i18n/I18nProvider.tsx",
+        "frontend/src/i18n/strings.ts",
+        "frontend/src/lib/validation.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,15 +41,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-27"
+        "REQ-31"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-results-ui-to-visibly-highlight-the-star-meal-in-the-recommendations-results-and-show-the-user-s-favorite-food-name-while-keeping-all-user-facing-text-in-english",
-      "featureTitle": "Update the results UI to visibly highlight the “Star Meal” in the recommendations results (and show the user’s favorite food name), while keeping all user-facing text in English.",
+      "featureId": "feature-define-the-language-toggle-behavior-for-returning-to-english-when-the-current-language-is-spanish-provide-a-visible-control-that-switches-the-ui-back-to-english",
+      "featureTitle": "Define the language-toggle behavior for returning to English: when the current language is Spanish, provide a visible control that switches the UI back to English.",
       "files": [
-        "frontend/src/components/ResultsView.tsx"
+        "frontend/src/components/LanguageToggle.tsx",
+        "frontend/src/i18n/strings.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -53,7 +60,45 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-29"
+        "REQ-32"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-persist-the-user-s-language-selection-in-local-storage-so-the-chosen-language-remains-consistent-after-a-page-refresh",
+      "featureTitle": "Persist the user’s language selection in local storage so the chosen language remains consistent after a page refresh.",
+      "files": [
+        "frontend/src/components/LanguageToggle.tsx",
+        "frontend/src/i18n/I18nProvider.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-33"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-do-not-attempt-to-automatically-translate-backend-provided-recipe-content-e-g-dish-names-ingredient-lists-instructions-and-health-explanations-unless-explicit-spanish-equivalents-are-available-in-the-data-the-language-toggle-should-primarily-affect-the-frontend-ui-chrome-and-static-strings",
+      "featureTitle": "Do not attempt to automatically translate backend-provided recipe content (e.g., dish names, ingredient lists, instructions, and health explanations) unless explicit Spanish equivalents are available in the data; the language toggle should primarily affect the frontend UI chrome and static strings.",
+      "files": [
+        "frontend/src/components/ResultsView.tsx",
+        "frontend/src/i18n/strings.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-34"
       ],
       "confidence": "high"
     }

@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Let users optionally enter a favorite food and, when provided, receive a highlighted “Star Meal” recommendation based on that favorite food.
+**Goal:** Add an in-app English/Spanish language toggle and translate all frontend UI chrome/static strings into Spanish, with the choice persisted across refreshes.
 
 **Planned changes:**
-- Add an optional “Favorite food” text input to the existing health input form without changing the primary button label (“Search Foods”).
-- Extend the frontend form data and recommendation request payload to include an optional `favoriteFood` string.
-- Update the backend `getFoodRecommendations` method signature to accept the additional favorite food parameter and regenerate/update frontend bindings so types match.
-- Implement backend logic to include a dedicated “Star Meal” Dish when `favoriteFood` is non-empty (trimmed), including health explanation, ingredients, instructions, and nutrition summary, while respecting allergy constraints.
-- Update results UI to prominently highlight the Star Meal (badge/label “Star Meal”) and display the favorite food name in English.
+- Add a language toggle control on both the input (form) screen and the results screen, showing a button labeled exactly “Cambiar A Español” when English is active and a separate visible control to switch back to English when Spanish is active.
+- Implement a simple local (in-code) localization mechanism and replace hard-coded user-facing UI strings with English/Spanish variants across `frontend/src/App.tsx`, `frontend/src/components/HealthInputForm.tsx`, `frontend/src/components/ResultsView.tsx`, and `frontend/src/components/SoundtrackControls.tsx`.
+- Persist the selected language in local storage and safely default to English if storage is unavailable/errors occur.
+- Ensure backend-provided recommendation/recipe content is not automatically translated and continues rendering unchanged when toggling languages.
 
-**User-visible outcome:** Users can (optionally) type a favorite food before pressing “Search Foods”; if provided, results include a clearly highlighted “Star Meal” entry showing that favorite food with details, while leaving the app’s behavior unchanged when the field is empty.
+**User-visible outcome:** Users can switch the app UI between English and Spanish from either the form screen or results screen without refreshing, and their language preference remains after a page reload.

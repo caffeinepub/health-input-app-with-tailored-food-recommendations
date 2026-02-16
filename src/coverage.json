@@ -1,79 +1,108 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T02:18:52.813Z",
+  "generatedAt": "2026-02-16T04:00:42.863Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 5,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-26",
-        "summary": "Add a new optional \"Favorite food\" text input to the health input form so a user can enter their favorite food before pressing the existing primary button labeled exactly “Search Foods”.",
+        "id": "REQ-30",
+        "summary": "Add a language toggle control to the app UI with a button labeled exactly “Cambiar A Español” that switches the app’s UI language from English to Spanish when activated.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/HealthInputForm.tsx"
+          "frontend/src/components/LanguageToggle.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/HealthInputForm.tsx"
+          "frontend/src/components/LanguageToggle.tsx",
+          "frontend/src/App.tsx"
         ]
       },
       {
-        "id": "REQ-27",
-        "summary": "Extend the frontend form data model and recommendation request to include an optional `favoriteFood` string, and update the backend canister method signature used by the frontend to accept this new parameter when fetching recommendations.",
+        "id": "REQ-31",
+        "summary": "Implement a simple in-app localization mechanism (no external translation services) and translate all user-facing UI strings currently hard-coded in the frontend into Spanish, including (at minimum) strings in `frontend/src/App.tsx`, `frontend/src/components/HealthInputForm.tsx`, `frontend/src/components/ResultsView.tsx`, and `frontend/src/components/SoundtrackControls.tsx`.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/i18n/strings.ts",
+          "frontend/src/i18n/I18nProvider.tsx",
+          "frontend/src/hooks/useI18n.ts",
           "frontend/src/App.tsx",
-          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/HealthInputForm.tsx",
-          "frontend/src/backend.d.ts"
+          "frontend/src/components/ResultsView.tsx",
+          "frontend/src/components/SoundtrackControls.tsx",
+          "frontend/src/lib/validation.ts"
         ],
         "matchedFiles": [
+          "frontend/src/i18n/strings.ts",
+          "frontend/src/i18n/I18nProvider.tsx",
+          "frontend/src/hooks/useI18n.ts",
           "frontend/src/App.tsx",
-          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/HealthInputForm.tsx",
-          "frontend/src/backend.d.ts"
+          "frontend/src/components/ResultsView.tsx",
+          "frontend/src/components/SoundtrackControls.tsx",
+          "frontend/src/lib/validation.ts"
         ]
       },
       {
-        "id": "REQ-28",
-        "summary": "Implement backend recommendation behavior so that when a user provides a non-empty favorite food, the returned recommendations include a dedicated “Star Meal” entry based on that favorite food, including a health explanation, ingredient list, cooking instructions, and nutrition summary.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-32",
+        "summary": "Define the language-toggle behavior for returning to English: when the current language is Spanish, provide a visible control that switches the UI back to English.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/LanguageToggle.tsx",
+          "frontend/src/i18n/strings.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/LanguageToggle.tsx",
+          "frontend/src/i18n/strings.ts"
+        ]
       },
       {
-        "id": "REQ-29",
-        "summary": "Update the results UI to visibly highlight the “Star Meal” in the recommendations results (and show the user’s favorite food name), while keeping all user-facing text in English.",
+        "id": "REQ-33",
+        "summary": "Persist the user’s language selection in local storage so the chosen language remains consistent after a page refresh.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/i18n/I18nProvider.tsx",
+          "frontend/src/components/LanguageToggle.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/i18n/I18nProvider.tsx",
+          "frontend/src/components/LanguageToggle.tsx"
+        ]
+      },
+      {
+        "id": "REQ-34",
+        "summary": "Do not attempt to automatically translate backend-provided recipe content (e.g., dish names, ingredient lists, instructions, and health explanations) unless explicit Spanish equivalents are available in the data; the language toggle should primarily affect the frontend UI chrome and static strings.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/ResultsView.tsx",
-          "frontend/src/components/ResultsView.tsx"
+          "frontend/src/i18n/strings.ts"
         ],
         "matchedFiles": [
           "frontend/src/components/ResultsView.tsx",
-          "frontend/src/components/ResultsView.tsx"
+          "frontend/src/i18n/strings.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
     "frontend/src/components/HealthInputForm.tsx",
+    "frontend/src/components/LanguageToggle.tsx",
     "frontend/src/components/ResultsView.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/SoundtrackControls.tsx",
+    "frontend/src/hooks/useI18n.ts",
+    "frontend/src/i18n/I18nProvider.tsx",
+    "frontend/src/i18n/strings.ts",
+    "frontend/src/lib/validation.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

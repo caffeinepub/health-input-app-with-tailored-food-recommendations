@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, X, Plus, Activity, Search } from 'lucide-react';
 import { useFoodRecommendations } from '../hooks/useQueries';
 import { validateHealthInput } from '../lib/validation';
+import { useI18n } from '../hooks/useI18n';
 import type { HealthFormData } from '../App';
 import type { Dish } from '../backend';
 
@@ -85,6 +86,7 @@ const COMMON_HEALTH_CONDITIONS = [
 ];
 
 export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps) {
+  const { t, language } = useI18n();
   const [age, setAge] = useState(initialData.age);
   const [weight, setWeight] = useState(initialData.weight);
   const [healthConditions, setHealthConditions] = useState<string[]>(initialData.healthConditions);
@@ -108,7 +110,6 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
       setHealthConditions([...healthConditions, conditionToAdd]);
       setConditionInput('');
       setConditionSearchTerm('');
-      // Automatically uncheck "No health conditions" when adding a condition
       setNoHealthConditions(false);
     }
   };
@@ -116,7 +117,6 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
   const handleRemoveCondition = (condition: string) => {
     const newConditions = healthConditions.filter((c) => c !== condition);
     setHealthConditions(newConditions);
-    // If all conditions removed, set noHealthConditions to true
     if (newConditions.length === 0) {
       setNoHealthConditions(true);
     }
@@ -124,13 +124,11 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
   const handleNoHealthConditionsToggle = () => {
     if (!noHealthConditions) {
-      // User is selecting "No health conditions" - clear all conditions
       setHealthConditions([]);
       setConditionInput('');
       setConditionSearchTerm('');
       setNoHealthConditions(true);
     } else {
-      // User is deselecting "No health conditions"
       setNoHealthConditions(false);
     }
   };
@@ -141,7 +139,6 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
     if (normalized && !allergies.some((a) => a.toLowerCase() === normalized)) {
       setAllergies([...allergies, allergyToAdd]);
       setAllergyInput('');
-      // Automatically uncheck "No allergies" when adding an allergy
       setNoAllergies(false);
     }
   };
@@ -149,7 +146,6 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
   const handleRemoveAllergy = (allergy: string) => {
     const newAllergies = allergies.filter((a) => a !== allergy);
     setAllergies(newAllergies);
-    // If all allergies removed, set noAllergies to true
     if (newAllergies.length === 0) {
       setNoAllergies(true);
     }
@@ -157,12 +153,10 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
   const handleNoAllergiesToggle = () => {
     if (!noAllergies) {
-      // User is selecting "No allergies" - clear all allergies
       setAllergies([]);
       setAllergyInput('');
       setNoAllergies(true);
     } else {
-      // User is deselecting "No allergies"
       setNoAllergies(false);
     }
   };
@@ -195,7 +189,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
       favoriteFood: favoriteFood.trim(),
     };
 
-    const error = validateHealthInput(formData);
+    const error = validateHealthInput(formData, language);
     if (error) {
       setValidationError(error);
       return;
@@ -232,21 +226,21 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
             <Activity className="w-6 h-6 text-primary" />
-            Your Health Information
+            {t('healthInfoTitle')}
           </CardTitle>
           <CardDescription>
-            Enter your health details to receive personalized food recommendations
+            {t('healthInfoDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Age and Weight */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="age">Age (years)</Label>
+              <Label htmlFor="age">{t('ageLabel')}</Label>
               <Input
                 id="age"
                 type="number"
-                placeholder="e.g., 30"
+                placeholder={t('agePlaceholder')}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 min="1"
@@ -254,11 +248,11 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="weight">Weight (kg)</Label>
+              <Label htmlFor="weight">{t('weightLabel')}</Label>
               <Input
                 id="weight"
                 type="number"
-                placeholder="e.g., 70"
+                placeholder={t('weightPlaceholder')}
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 min="1"
@@ -269,16 +263,16 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
           {/* Blood Pressure */}
           <div className="space-y-2">
-            <Label>Blood Pressure (mmHg)</Label>
+            <Label>{t('bloodPressureLabel')}</Label>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="systolic" className="text-xs text-muted-foreground">
-                  Systolic (top number)
+                  {t('systolicLabel')}
                 </Label>
                 <Input
                   id="systolic"
                   type="number"
-                  placeholder="e.g., 120"
+                  placeholder={t('systolicPlaceholder')}
                   value={systolicBP}
                   onChange={(e) => setSystolicBP(e.target.value)}
                   min="60"
@@ -287,12 +281,12 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
               </div>
               <div className="space-y-2">
                 <Label htmlFor="diastolic" className="text-xs text-muted-foreground">
-                  Diastolic (bottom number)
+                  {t('diastolicLabel')}
                 </Label>
                 <Input
                   id="diastolic"
                   type="number"
-                  placeholder="e.g., 80"
+                  placeholder={t('diastolicPlaceholder')}
                   value={diastolicBP}
                   onChange={(e) => setDiastolicBP(e.target.value)}
                   min="40"
@@ -305,7 +299,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
           {/* Health Conditions */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Health Conditions</Label>
+              <Label>{t('healthConditionsLabel')}</Label>
               <Button
                 type="button"
                 variant={noHealthConditions ? 'default' : 'outline'}
@@ -313,7 +307,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                 onClick={handleNoHealthConditionsToggle}
                 className="text-xs"
               >
-                {noHealthConditions ? '✓ ' : ''}No health conditions
+                {noHealthConditions ? '✓ ' : ''}{t('noHealthConditions')}
               </Button>
             </div>
 
@@ -324,7 +318,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search or add custom condition..."
+                      placeholder={t('searchConditionsPlaceholder')}
                       value={conditionInput}
                       onChange={(e) => {
                         setConditionInput(e.target.value);
@@ -348,24 +342,19 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
                 {/* Quick Add Common Conditions */}
                 {conditionSearchTerm && filteredConditions.length > 0 && (
-                  <div className="border border-border rounded-lg p-3 bg-muted/30 max-h-48 overflow-y-auto">
-                    <p className="text-xs text-muted-foreground mb-2">Quick add:</p>
+                  <div className="border rounded-lg p-3 bg-muted/30 max-h-48 overflow-y-auto">
+                    <p className="text-xs text-muted-foreground mb-2">{t('quickAddLabel')}</p>
                     <div className="flex flex-wrap gap-2">
                       {filteredConditions.slice(0, 20).map((condition) => (
-                        <Button
+                        <Badge
                           key={condition}
-                          type="button"
-                          variant="outline"
-                          size="sm"
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
                           onClick={() => handleAddCondition(condition)}
-                          className="text-xs h-7"
-                          disabled={healthConditions.some(
-                            (c) => c.toLowerCase() === condition.toLowerCase()
-                          )}
                         >
                           <Plus className="w-3 h-3 mr-1" />
                           {condition}
-                        </Button>
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -373,14 +362,14 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
                 {/* Selected Conditions */}
                 {healthConditions.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-muted/20 rounded-lg">
+                  <div className="flex flex-wrap gap-2">
                     {healthConditions.map((condition) => (
-                      <Badge key={condition} variant="secondary" className="gap-1 pr-1">
+                      <Badge key={condition} variant="default" className="gap-1">
                         {condition}
                         <button
                           type="button"
                           onClick={() => handleRemoveCondition(condition)}
-                          className="ml-1 hover:bg-muted rounded-full p-0.5"
+                          className="ml-1 hover:text-destructive"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -395,7 +384,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
           {/* Allergies */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Allergies</Label>
+              <Label>{t('allergiesLabel')}</Label>
               <Button
                 type="button"
                 variant={noAllergies ? 'default' : 'outline'}
@@ -403,21 +392,25 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                 onClick={handleNoAllergiesToggle}
                 className="text-xs"
               >
-                {noAllergies ? '✓ ' : ''}No allergies
+                {noAllergies ? '✓ ' : ''}{t('noAllergies')}
               </Button>
             </div>
 
             {!noAllergies && (
               <>
-                {/* Add Custom Allergy */}
+                {/* Search/Add Custom Allergy */}
                 <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter allergy..."
-                    value={allergyInput}
-                    onChange={(e) => setAllergyInput(e.target.value)}
-                    onKeyPress={handleAllergyKeyPress}
-                    disabled={noAllergies}
-                  />
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder={t('searchAllergiesPlaceholder')}
+                      value={allergyInput}
+                      onChange={(e) => setAllergyInput(e.target.value)}
+                      onKeyPress={handleAllergyKeyPress}
+                      className="pl-9"
+                      disabled={noAllergies}
+                    />
+                  </div>
                   <Button
                     type="button"
                     variant="secondary"
@@ -430,36 +423,33 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                 </div>
 
                 {/* Quick Add Common Allergies */}
-                <div className="border border-border rounded-lg p-3 bg-muted/30">
-                  <p className="text-xs text-muted-foreground mb-2">Common allergies:</p>
+                <div className="border rounded-lg p-3 bg-muted/30">
+                  <p className="text-xs text-muted-foreground mb-2">{t('quickAddLabel')}</p>
                   <div className="flex flex-wrap gap-2">
                     {COMMON_ALLERGIES.map((allergy) => (
-                      <Button
+                      <Badge
                         key={allergy}
-                        type="button"
                         variant="outline"
-                        size="sm"
+                        className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
                         onClick={() => handleAddAllergy(allergy)}
-                        className="text-xs h-7"
-                        disabled={allergies.some((a) => a.toLowerCase() === allergy.toLowerCase())}
                       >
                         <Plus className="w-3 h-3 mr-1" />
                         {allergy}
-                      </Button>
+                      </Badge>
                     ))}
                   </div>
                 </div>
 
                 {/* Selected Allergies */}
                 {allergies.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-destructive/10 rounded-lg">
+                  <div className="flex flex-wrap gap-2">
                     {allergies.map((allergy) => (
-                      <Badge key={allergy} variant="destructive" className="gap-1 pr-1">
+                      <Badge key={allergy} variant="destructive" className="gap-1">
                         {allergy}
                         <button
                           type="button"
                           onClick={() => handleRemoveAllergy(allergy)}
-                          className="ml-1 hover:bg-destructive/80 rounded-full p-0.5"
+                          className="ml-1 hover:text-destructive-foreground/70"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -473,16 +463,16 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
           {/* Favorite Food */}
           <div className="space-y-2">
-            <Label htmlFor="favoriteFood">Favorite food (optional)</Label>
+            <Label htmlFor="favoriteFood">{t('favoriteFoodLabel')}</Label>
             <Input
               id="favoriteFood"
               type="text"
-              placeholder="e.g., Pizza, Tacos, Sushi..."
+              placeholder={t('favoriteFoodPlaceholder')}
               value={favoriteFood}
               onChange={(e) => setFavoriteFood(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              We'll create a healthy version of your favorite food as a Star Meal!
+              {t('favoriteFoodHelper')}
             </p>
           </div>
 
@@ -498,10 +488,10 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
             {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Searching...
+                {t('searchFoodsButton')}...
               </>
             ) : (
-              'Search Foods'
+              t('searchFoodsButton')
             )}
           </Button>
         </CardContent>

@@ -1,76 +1,139 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Favorite Food input + Star Meal highlight in results",
+  "title": "Spanish language toggle with local in-app translations",
   "requirements": [
     {
-      "id": "REQ-26",
-      "summary": "Add an optional “Favorite food” text input to the health input form without changing the primary button label.",
+      "id": "REQ-30",
+      "summary": "Add an English->Spanish language toggle button labeled exactly “Cambiar A Español” and make it available on both form and results views without refresh.",
       "acceptanceCriteria": [
-        "The health input form includes a clearly labeled optional text input: \"Favorite food\".",
-        "The existing primary submit button text remains exactly “Search Foods”.",
-        "Typing a favorite food updates the form state and is included in the submission payload when the user presses “Search Foods”.",
-        "If the favorite food input is left empty, the app behaves as it did previously (no errors; recommendations still load)."
+        "A button with the exact visible label “Cambiar A Español” is present on the app UI when the current language is English.",
+        "Clicking the button switches the UI language to Spanish without requiring a refresh.",
+        "The toggle is available on both the initial (form) screen and the results screen (so users can switch languages in either view)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/HealthInputForm.tsx",
-          "operation": "modify",
-          "description": "Add local form state for an optional favorite food value, render a clearly labeled \"Favorite food\" text field using shadcn-ui Input/Label, and include the value in the formData submitted on \"Search Foods\" while keeping the button label exactly “Search Foods”. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "summary": "Extend the frontend form data model and recommendation request to carry optional favoriteFood and pass it through the React Query mutation to backend bindings.",
-      "acceptanceCriteria": [
-        "Frontend form data type includes `favoriteFood: string` (empty string allowed).",
-        "The React Query mutation that calls the backend passes `favoriteFood` to the backend recommendation method.",
-        "Backend `getFoodRecommendations` accepts the favorite food parameter (as Text) in addition to the existing parameters.",
-        "The generated/consumed frontend backend bindings (the type definitions used by `useQueries.ts`) are updated so TypeScript compiles without `any` casts or signature mismatches."
-      ],
-      "file_operations": [
+          "path": "frontend/src/components/LanguageToggle.tsx",
+          "operation": "create",
+          "description": "Create a shared LanguageToggle control that reads/writes the current language via the app localization mechanism and renders the English->Spanish button with the exact label “Cambiar A Español”. Use the shadcn-ui Button component to match the app’s UI patterns (verify the component's usage instructions before implementing)."
+        },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Extend the HealthFormData type to include `favoriteFood: string` (empty string allowed) and initialize it in the default form state so it persists between form and results views."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Extend the GetFoodRecommendationsParams type to include `favoriteFood: string`, and update the mutation to pass favoriteFood to the backend actor getFoodRecommendations call in a type-safe way (e.g., convert empty string to null if required by current frontend bindings)."
-        },
-        {
-          "path": "frontend/src/components/HealthInputForm.tsx",
-          "operation": "modify",
-          "description": "Update HealthInputForm submission payload to include `favoriteFood` (as a string, empty allowed) and pass it into the useFoodRecommendations mutation variables so it reaches the backend call; keep existing validation behavior unchanged for empty favorite food. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/backend.d.ts",
-          "operation": "modify",
-          "description": "If needed after backend signature changes, update the frontend type definitions for `backendInterface.getFoodRecommendations` so TypeScript matches the actor method signature (including the favoriteFood parameter) without `any` casts or mismatches."
+          "description": "Wire LanguageToggle into the existing header area so it is visible on both the initial form screen and the results screen, and ensure it updates UI language immediately without page refresh."
         }
       ]
     },
     {
-      "id": "REQ-29",
-      "summary": "Highlight a “Star Meal” dish in results and display the user’s favorite food name when present, with all labels in English.",
+      "id": "REQ-31",
+      "summary": "Implement local i18n and translate all hard-coded user-facing UI strings in the specified frontend components to Spanish (no external services).",
       "acceptanceCriteria": [
-        "When a Star Meal dish is present in results, the UI displays a prominent label/badge reading “Star Meal” on that dish card.",
-        "The Star Meal card clearly shows the favorite food name as the dish title (or as part of the title).",
-        "All Star Meal-related user-facing labels are in English.",
-        "If no Star Meal is present, the results UI renders as it did previously."
+        "When Spanish is selected, the visible UI labels, headings, helper text, and button text in the above components are shown in Spanish (excluding user-entered data).",
+        "When English is selected, the UI shows the original English text.",
+        "The following must be translated (non-exhaustive examples to validate coverage): header tagline (“Personalized nutrition guidance”), hero heading/paragraph, form section titles/descriptions (e.g., “Your Health Information”), field labels (e.g., “Age (years)”, “Weight (kg)”, “Blood Pressure (mmHg)”), button labels (e.g., “Search Foods”, “Edit Inputs”), empty-state message (“No recommendations found…”), and soundtrack control aria-labels and popover text (e.g., “Volume”, “Muted”)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/i18n/strings.ts",
+          "operation": "create",
+          "description": "Define a simple in-app translation dictionary for English and Spanish covering all user-facing UI strings used by App, HealthInputForm, ResultsView, SoundtrackControls, and validation messaging (no external translation services)."
+        },
+        {
+          "path": "frontend/src/i18n/I18nProvider.tsx",
+          "operation": "create",
+          "description": "Create an I18nProvider that stores current language state and exposes a translation helper to the component tree; default to English when no preference is set."
+        },
+        {
+          "path": "frontend/src/hooks/useI18n.ts",
+          "operation": "create",
+          "description": "Create a non-JSX hook that provides convenient access to the localization context (current language + translate helper) for components."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Replace hard-coded header/hero/footer UI strings with localized lookups, and wrap the app UI with the I18nProvider (in App, since frontend/src/main.tsx must not be edited)."
+        },
+        {
+          "path": "frontend/src/components/HealthInputForm.tsx",
+          "operation": "modify",
+          "description": "Replace hard-coded form headings, descriptions, labels, placeholders, helper text, button text, and error strings with localized equivalents via the new localization hook; keep user-entered values unchanged. Continue using existing shadcn-ui components (verify the component's usage instructions before implementing)."
+        },
+        {
+          "path": "frontend/src/components/ResultsView.tsx",
+          "operation": "modify",
+          "description": "Replace hard-coded results headings/labels, disclaimer copy, empty state text, and UI chrome strings with localized equivalents; do not translate backend-provided dish fields. Continue using existing shadcn-ui components (verify the component's usage instructions before implementing)."
+        },
+        {
+          "path": "frontend/src/components/SoundtrackControls.tsx",
+          "operation": "modify",
+          "description": "Localize user-facing strings including aria-labels, popover labels, status text, and error messages using the localization hook, while preserving the existing audio behavior. Continue using existing shadcn-ui components (verify the component's usage instructions before implementing)."
+        },
+        {
+          "path": "frontend/src/lib/validation.ts",
+          "operation": "modify",
+          "description": "Update validation messaging so user-visible validation errors can be shown in the selected language via the in-app localization mechanism (no external services)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-32",
+      "summary": "Provide a Spanish->English visible control and ensure the English->Spanish label only appears when English is active.",
+      "acceptanceCriteria": [
+        "When Spanish is selected, there is a visible control to switch back to English.",
+        "Switching back restores English UI strings immediately without a refresh.",
+        "The “Cambiar A Español” label is only used for the English->Spanish control (it does not appear while Spanish is active)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LanguageToggle.tsx",
+          "operation": "modify",
+          "description": "Implement the reverse control shown while Spanish is active (Spanish->English) with a different visible label than “Cambiar A Español”, and ensure toggling restores English UI strings immediately. Use the shadcn-ui Button component for the control (verify the component's usage instructions before implementing)."
+        },
+        {
+          "path": "frontend/src/i18n/strings.ts",
+          "operation": "modify",
+          "description": "Add localized strings required for the Spanish->English control label and any related accessible text used by the LanguageToggle."
+        }
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "summary": "Persist language selection in localStorage with safe fallback to English if storage is unavailable.",
+      "acceptanceCriteria": [
+        "If a user switches to Spanish and refreshes the page, the app loads in Spanish.",
+        "If a user switches back to English and refreshes the page, the app loads in English.",
+        "If local storage is unavailable or errors occur, the app safely defaults to English without crashing."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/i18n/I18nProvider.tsx",
+          "operation": "modify",
+          "description": "Persist the selected language in localStorage and load it on startup; wrap all localStorage reads/writes in try/catch and default to English on any error."
+        },
+        {
+          "path": "frontend/src/components/LanguageToggle.tsx",
+          "operation": "modify",
+          "description": "Ensure toggling language updates the localization state managed by I18nProvider so the persisted preference is updated immediately and reflected in the UI without refresh."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Ensure language toggle only affects frontend UI chrome/static strings and does not attempt to translate backend recipe content.",
+      "acceptanceCriteria": [
+        "Toggling language does not break rendering of recommendation data returned from the backend.",
+        "Dish content remains readable and unchanged if no Spanish version exists (no placeholder or partial machine-translation behavior is introduced)."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/ResultsView.tsx",
           "operation": "modify",
-          "description": "Detect when a Star Meal is present (e.g., by matching dish.name to the non-empty formData.favoriteFood in a case-insensitive/trimmed comparison), and render a prominent English “Star Meal” badge/label and visual emphasis (e.g., special border/background) on that card while leaving non-star dishes unchanged. Use existing shadcn-ui Badge/Card styling patterns and verify the component's usage instructions before implementing."
+          "description": "Confirm dish content fields coming from the backend (e.g., dish.name, ingredients, instructions, healthExplanation) are rendered as-is and not passed through the translation mechanism; localize only UI chrome around them."
         },
         {
-          "path": "frontend/src/components/ResultsView.tsx",
+          "path": "frontend/src/i18n/strings.ts",
           "operation": "modify",
-          "description": "Optionally add the favorite food value to the results summary section (only when non-empty) to reinforce that the Star Meal corresponds to the user’s favorite food, ensuring all user-facing text remains in English and existing rendering remains unchanged when favoriteFood is empty."
+          "description": "Keep the translation dictionary scoped to static UI strings and labels, avoiding any mapping intended to translate backend-provided recipe fields."
         }
       ]
     }

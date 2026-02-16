@@ -1,52 +1,60 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T02:18:52.810Z",
-  "summary": "The diff implements the favoriteFood field end-to-end (frontend form data + mutation payload + backend method parameter) and adds Star Meal UI detection/highlighting logic. However, backend Star Meal handling does not clearly meet the trimming and allergy-safe ingredient constraints, and the diff does not show any update to generated/consumed frontend backend bindings beyond changing the call site.",
-  "missing_requirements": [
-    {
-      "id": "REQ-27",
-      "requirement": "Update the generated/consumed frontend backend bindings (type definitions used by useQueries.ts) so TypeScript compiles without any casts or signature mismatches after adding the new favoriteFood parameter.",
-      "reason": "The diff shows frontend call-site changes in frontend/src/hooks/useQueries.ts and backend signature changes in backend/main.mo, but does not show any change to the generated/consumed bindings file (e.g., the declarations in frontend/src/backend) to reflect the new getFoodRecommendations signature.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts",
-        "backend/main.mo",
-        "frontend/src/App.tsx (imports Dish from './backend')"
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "requirement": "If favoriteFood is non-empty (after trimming), add a Star Meal Dish; and ensure the Star Meal respects allergy constraints (no ingredient matches any allergy case-insensitively; use substitutions/omissions if needed).",
-      "reason": "Backend logic checks only favoriteText == \"\" and does not trim whitespace before deciding; and the shown Star Meal creation path (createStarMealAndAppendToRecipes/createStarMeal...) provides no visible evidence of trimming or allergy-aware ingredient substitution/omission logic for the Star Meal.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-16T04:00:42.859Z",
+  "summary": "Implemented an in-app i18n context with a LanguageToggle button, integrated translations into key UI components, and added localStorage persistence. Diff also includes several unrelated UI/theme and component behavior changes not requested in the BuildRequest.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Added/used a SoundtrackControls feature in the main app UI.",
-      "reason": "Not requested by REQ-26/27/28/29; the BuildRequest explicitly focuses on favorite food input and Star Meal behavior/UI.",
+      "description": "Global visual/theme changes (new OKLCH palette and Tailwind theme extensions).",
+      "reason": "BuildRequest only asked for a Spanish language toggle and local frontend string localization; it did not request visual redesign/theme updates.",
       "evidence": [
-        "frontend/src/App.tsx (imports and renders SoundtrackControls)"
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
       ]
     },
     {
-      "description": "Added/used decorative tiger images in the hero section via DecorativeImage components.",
-      "reason": "Not requested by REQ-26/27/28/29; the BuildRequest does not mention new decorative imagery changes.",
+      "description": "SEO/title/meta/icon changes in the HTML entry point.",
+      "reason": "Not requested by the BuildRequest (which focused on language toggle and translations).",
       "evidence": [
-        "frontend/src/App.tsx (renders multiple DecorativeImage instances)"
+        "frontend/index.html"
+      ]
+    },
+    {
+      "description": "Behavioral changes to dish image handling (resetting error state on photoReference changes) and decorative image error-hiding wrapper.",
+      "reason": "Not requested; these are unrelated enhancements to image rendering robustness.",
+      "evidence": [
+        "frontend/src/components/DishImage.tsx",
+        "frontend/src/components/DecorativeImage.tsx"
+      ]
+    },
+    {
+      "description": "React Query hook changes for getFoodRecommendations mutation wrapper and typing.",
+      "reason": "Not requested by language-toggle/i18n requirements.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Added/changed localized validation messages in validation helper.",
+      "reason": "BuildRequest scope was translating UI strings in specific components; validation localization is extra functionality beyond explicitly requested components/strings.",
+      "evidence": [
+        "frontend/src/lib/validation.ts"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.7,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
     "frontend/src/components/HealthInputForm.tsx",
+    "frontend/src/components/LanguageToggle.tsx",
     "frontend/src/components/ResultsView.tsx",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/SoundtrackControls.tsx",
+    "frontend/src/hooks/useI18n.ts",
+    "frontend/src/i18n/I18nProvider.tsx",
+    "frontend/src/i18n/strings.ts",
+    "frontend/src/lib/validation.ts",
     "project_state.json"
   ]
 }

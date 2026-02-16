@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { HealthInputForm } from './components/HealthInputForm';
 import { ResultsView } from './components/ResultsView';
 import { SoundtrackControls } from './components/SoundtrackControls';
+import { LanguageToggle } from './components/LanguageToggle';
 import { DecorativeImage } from './components/DecorativeImage';
+import { I18nProvider } from './i18n/I18nProvider';
+import { useI18n } from './hooks/useI18n';
 import type { Dish } from './backend';
 import { Heart } from 'lucide-react';
 import { SiX, SiFacebook, SiLinkedin } from 'react-icons/si';
@@ -17,7 +20,8 @@ export type HealthFormData = {
   favoriteFood: string;
 };
 
-function App() {
+function AppContent() {
+  const { t } = useI18n();
   const [formData, setFormData] = useState<HealthFormData>({
     age: '',
     weight: '',
@@ -56,11 +60,14 @@ function App() {
                 <Heart className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">Barrera Healthy Eats</h1>
-                <p className="text-xs text-muted-foreground">Personalized nutrition guidance</p>
+                <h1 className="text-xl font-bold text-foreground">{t('appName')}</h1>
+                <p className="text-xs text-muted-foreground">{t('tagline')}</p>
               </div>
             </div>
-            <SoundtrackControls />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <SoundtrackControls />
+            </div>
           </div>
         </div>
       </header>
@@ -86,10 +93,10 @@ function App() {
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
-                  Discover Foods That Support Your Health
+                  {t('heroTitle')}
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  Enter your health information and get personalized food recommendations tailored to your needs.
+                  {t('heroDescription')}
                 </p>
               </div>
               <div className="relative aspect-[7/3] rounded-2xl overflow-hidden shadow-lg">
@@ -122,10 +129,10 @@ function App() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>© {currentYear} Barrera Healthy Eats</span>
+              <span>© {currentYear} {t('appName')}</span>
               <span className="hidden md:inline">•</span>
               <span className="flex items-center gap-1.5">
-                Built with <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> using{' '}
+                {t('builtWith')} <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> {t('using')}{' '}
                 <a
                   href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
                   target="_blank"
@@ -163,6 +170,14 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
   );
 }
 
