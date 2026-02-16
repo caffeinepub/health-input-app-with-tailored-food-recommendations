@@ -1,37 +1,42 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Music, Volume2, VolumeX, Play, Pause } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Music, Volume2, VolumeX, Play, Pause, AlertCircle } from 'lucide-react';
 import { useSoundtrackPreferences } from '../hooks/useSoundtrackPreferences';
 
 export function SoundtrackControls() {
   const { preferences, setEnabled, setVolume, toggleMuted } = useSoundtrackPreferences();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!audioRef.current) {
-      audioRef.current = new Audio('/assets/audio/barrera-healthy-eats-theme.mp3');
-      audioRef.current.loop = true;
-    }
-
-    const audio = audioRef.current;
-
-    if (preferences.enabled) {
-      audio.volume = preferences.muted ? 0 : preferences.volume;
-      audio.play().catch((error) => {
-        console.error('Failed to play audio:', error);
+      const audio = new Audio('/assets/audio/barrera-healthy-eats-theme.mp3');
+      audio.loop = true;
+      
+      audio.addEventListener('play', () => setIsPlaying(true));
+      audio.addEventListener('pause', () => setIsPlaying(false));
+      audio.addEventListener('ended', () => setIsPlaying(false));
+      audio.addEventListener('error', () => {
+        setError('Unable to load audio file. Please check your connection.');
+        setIsPlaying(false);
       });
-    } else {
-      audio.pause();
+      
+      audioRef.current = audio;
     }
 
     return () => {
-      if (audio && !preferences.enabled) {
-        audio.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.removeEventListener('play', () => setIsPlaying(true));
+        audioRef.current.removeEventListener('pause', () => setIsPlaying(false));
+        audioRef.current.removeEventListener('ended', () => setIsPlaying(false));
       }
     };
-  }, [preferences.enabled]);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -39,8 +44,26 @@ export function SoundtrackControls() {
     }
   }, [preferences.volume, preferences.muted]);
 
-  const handleTogglePlay = () => {
-    setEnabled(!preferences.enabled);
+  const handleTogglePlay = async () => {
+    if (!audioRef.current) return;
+
+    setError(null);
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setEnabled(false);
+      } else {
+        audioRef.current.volume = preferences.muted ? 0 : preferences.volume;
+        await audioRef.current.play();
+        setEnabled(true);
+      }
+    } catch (err) {
+      console.error('Playback error:', err);
+      setError('Unable to play audio. Your browser may have blocked autoplay.');
+      setEnabled(false);
+      setIsPlaying(false);
+    }
   };
 
   const handleVolumeChange = (values: number[]) => {
@@ -54,9 +77,9 @@ export function SoundtrackControls() {
         size="icon"
         onClick={handleTogglePlay}
         className="h-9 w-9"
-        aria-label={preferences.enabled ? 'Pause music' : 'Play music'}
+        aria-label={isPlaying ? 'Pause music' : 'Play music'}
       >
-        {preferences.enabled ? (
+        {isPlaying ? (
           <Pause className="h-4 w-4" />
         ) : (
           <Play className="h-4 w-4" />
@@ -76,6 +99,12 @@ export function SoundtrackControls() {
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end">
           <div className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">{error}</AlertDescription>
+              </Alert>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Volume</span>
               <Button

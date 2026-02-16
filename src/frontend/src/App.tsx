@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { HealthInputForm } from './components/HealthInputForm';
 import { ResultsView } from './components/ResultsView';
 import { SoundtrackControls } from './components/SoundtrackControls';
+import { DecorativeImage } from './components/DecorativeImage';
 import type { Dish } from './backend';
 import { Heart } from 'lucide-react';
 import { SiX, SiFacebook, SiLinkedin } from 'react-icons/si';
@@ -66,17 +67,17 @@ function App() {
       {!showResults && (
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-accent/5 to-background">
           {/* Tiger Decorations */}
-          <img
+          <DecorativeImage
             src="/assets/generated/tiger-decal-left.dim_256x256.png"
-            alt=""
             className="absolute left-0 top-0 w-32 h-32 md:w-40 md:h-40 opacity-20 pointer-events-none"
-            aria-hidden="true"
           />
-          <img
+          <DecorativeImage
             src="/assets/generated/tiger-decal-right.dim_256x256.png"
-            alt=""
             className="absolute right-0 bottom-0 w-32 h-32 md:w-40 md:h-40 opacity-20 pointer-events-none"
-            aria-hidden="true"
+          />
+          <DecorativeImage
+            src="/assets/generated/tiger-icon.dim_128x128.png"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 opacity-10 pointer-events-none"
           />
           
           <div className="container mx-auto px-4 py-12 md:py-16 relative z-[1]">

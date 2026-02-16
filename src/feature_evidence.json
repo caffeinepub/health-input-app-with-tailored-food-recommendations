@@ -2,49 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-change-the-app-website-name-to-barrera-healthy-eats-everywhere-it-is-user-visible-including-the-html-document-title-and-the-in-app-header-footer-branding-text-that-currently-displays-healthyeats",
-      "featureTitle": "Change the app/website name to “Barrera Healthy Eats” everywhere it is user-visible, including the HTML document title and the in-app header/footer branding text that currently displays “HealthyEats”.",
-      "files": [
-        "frontend/index.html",
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-19"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-small-tiger-themed-decorative-elements-to-the-ui-as-subtle-accents-e-g-small-corner-edge-decals-in-the-header-and-or-hero-section-using-generated-static-image-assets-served-from-the-frontend-public-assets-path",
-      "featureTitle": "Add small tiger-themed decorative elements to the UI as subtle accents (e.g., small corner/edge decals in the header and/or hero section) using generated static image assets served from the frontend public assets path.",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-20"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-an-optional-soundtrack-background-music-feature-that-users-can-control-play-pause-and-volume-or-mute-with-the-soundtrack-off-by-default-and-the-user-s-choice-persisted-locally-so-it-stays-consistent-on-refresh",
-      "featureTitle": "Add an optional soundtrack/background music feature that users can control (play/pause and volume or mute), with the soundtrack off by default and the user’s choice persisted locally so it stays consistent on refresh.",
+      "featureId": "feature-ensure-the-tiger-decal-decorations-referenced-by-the-hero-section-render-reliably-in-the-ui-specifically-the-two-hero-section-images-in-frontend-src-app-tsx-must-load-from-assets-generated-tiger-decal-left-dim-256x256-png-and-assets-generated-tiger-decal-right-dim-256x256-png-and-be-visibly-present-on-the-initial-non-results-screen",
+      "featureTitle": "Ensure the tiger decal decorations referenced by the hero section render reliably in the UI. Specifically, the two hero-section images in `frontend/src/App.tsx` must load from `/assets/generated/tiger-decal-left.dim_256x256.png` and `/assets/generated/tiger-decal-right.dim_256x256.png` and be visibly present on the initial (non-results) screen.",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/SoundtrackControls.tsx",
-        "frontend/src/hooks/useSoundtrackPreferences.ts"
+        "frontend/src/components/DecorativeImage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -54,7 +16,41 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-22"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-verify-the-required-static-tiger-decal-image-assets-exist-in-the-frontend-public-assets-path-so-the-hero-section-can-load-them-place-them-under-frontend-public-assets-generated-using-the-exact-filenames-already-referenced-by-the-app",
+      "featureTitle": "Add/verify the required static tiger decal image assets exist in the frontend public assets path so the hero section can load them. Place them under `frontend/public/assets/generated/` using the exact filenames already referenced by the app.",
+      "files": [],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-23"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-soundtrack-play-behavior-so-that-pressing-the-play-control-produces-audible-audio-when-not-muted-and-does-not-fail-silently-the-soundtrack-must-be-loaded-from-the-existing-path-referenced-in-frontend-src-components-soundtrackcontrols-tsx-assets-audio-barrera-healthy-eats-theme-mp3",
+      "featureTitle": "Fix the soundtrack play behavior so that pressing the Play control produces audible audio (when not muted) and does not fail silently. The soundtrack must be loaded from the existing path referenced in `frontend/src/components/SoundtrackControls.tsx`: `/assets/audio/barrera-healthy-eats-theme.mp3`.",
+      "files": [
+        "frontend/src/components/SoundtrackControls.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-24"
       ],
       "confidence": "high"
     }

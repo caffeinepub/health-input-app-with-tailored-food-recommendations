@@ -1,92 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Barrera Healthy Eats branding, tiger decals, and optional soundtrack",
+  "title": "Restore tiger hero decals and fix soundtrack playback reliability",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Update all user-visible branding text and document title to “Barrera Healthy Eats”.",
+      "id": "REQ-22",
+      "summary": "Make hero tiger decals render reliably on the initial screen and hide broken images on load failure.",
       "acceptanceCriteria": [
-        "Browser tab title uses “Barrera Healthy Eats” (replacing the existing “HealthyEats - Personalized Food Recommendations” title).",
-        "The in-app header brand name text shows “Barrera Healthy Eats”.",
-        "The footer copyright line shows “Barrera Healthy Eats”.",
-        "No remaining user-visible occurrences of “HealthyEats” are present in the app UI after the change (excluding code/internal identifiers if any)."
+        "On a fresh load (before results are shown), the hero section displays two subtle tiger decal images (one top-left, one bottom-right).",
+        "The decals load from the exact public paths `/assets/generated/tiger-decal-left.dim_256x256.png` and `/assets/generated/tiger-decal-right.dim_256x256.png` without showing broken-image UI.",
+        "If an asset is missing or fails to load, the UI hides the broken image element (no broken-image icon/box is shown)."
       ],
       "file_operations": [
         {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Replace the HTML document <title> with “Barrera Healthy Eats” so the browser tab title matches the new branding."
+          "path": "frontend/src/components/DecorativeImage.tsx",
+          "operation": "create",
+          "description": "Create a small, reusable decorative <img> wrapper that hides itself when the underlying asset fails to load (onError), preventing broken-image UI while keeping layout stable."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update header and footer user-visible brand text from “HealthyEats” to “Barrera Healthy Eats”, and scan this file for any other user-visible occurrences to update."
+          "description": "Replace the two hero-section raw <img> tiger decals with the new DecorativeImage wrapper so they reliably render on the initial (non-results) screen and automatically hide on load error; keep sources exactly `/assets/generated/tiger-decal-left.dim_256x256.png` and `/assets/generated/tiger-decal-right.dim_256x256.png`. Also wire in the required generated icon asset by rendering `frontend/public/assets/generated/tiger-icon.dim_128x128.png` as a subtle inline hero decoration (non-results screen) using the same broken-image hiding behavior."
         }
       ]
     },
     {
-      "id": "REQ-20",
-      "summary": "Add subtle tiger decorative decals (static assets) to the header and/or hero without affecting usability in light/dark mode.",
+      "id": "REQ-23",
+      "summary": "Ensure the required tiger decal static assets exist under the public generated assets directory using exact filenames.",
       "acceptanceCriteria": [
-        "At least two tiger decorative images are rendered in the UI as non-intrusive decorations (they must not block or overlap key form controls or results content on common screen sizes).",
-        "Tiger decorations load from frontend static assets (not from the backend).",
-        "Decorations are purely ornamental and do not add new navigation or functional flows.",
-        "Decorations look acceptable in both light and dark mode (no harsh contrast or illegible overlays)."
+        "`frontend/public/assets/generated/tiger-decal-left.dim_256x256.png` exists and is served by the frontend.",
+        "`frontend/public/assets/generated/tiger-decal-right.dim_256x256.png` exists and is served by the frontend."
       ],
       "file_operations": [
         {
           "path": "frontend/public/assets/generated/tiger-decal-left.dim_256x256.png",
           "operation": "create",
-          "description": "Add the generated static tiger decal asset at the required path so it can be served directly by the frontend."
+          "description": "Add the generated left tiger decal image asset at the exact path `frontend/public/assets/generated/tiger-decal-left.dim_256x256.png` so it is served at runtime."
         },
         {
           "path": "frontend/public/assets/generated/tiger-decal-right.dim_256x256.png",
           "operation": "create",
-          "description": "Add the generated static tiger decal asset at the required path so it can be served directly by the frontend."
+          "description": "Add the generated right tiger decal image asset at the exact path `frontend/public/assets/generated/tiger-decal-right.dim_256x256.png` so it is served at runtime."
         },
         {
           "path": "frontend/public/assets/generated/tiger-icon.dim_128x128.png",
           "operation": "create",
-          "description": "Add the generated static tiger icon asset at the required path so it can be served directly by the frontend."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Render at least two purely decorative tiger images (using frontend/public/assets/generated/tiger-decal-left.dim_256x256.png and frontend/public/assets/generated/tiger-decal-right.dim_256x256.png, optionally frontend/public/assets/generated/tiger-icon.dim_128x128.png) as subtle accents in the header and/or hero section with positioning/z-index/pointer-event settings that avoid covering primary content and remain visually acceptable in both light and dark mode."
+          "description": "Add the required generated tiger icon asset at the exact path `frontend/public/assets/generated/tiger-icon.dim_128x128.png` so it can be referenced from the UI."
         }
       ]
     },
     {
-      "id": "REQ-21",
-      "summary": "Add optional background music with play/pause and mute/volume controls, default off, persisting preferences locally.",
+      "id": "REQ-24",
+      "summary": "Fix soundtrack playback so Play produces audible audio, state reflects playback, and failures show a user-facing message.",
       "acceptanceCriteria": [
-        "A visible music control UI exists (at minimum: play/pause and a mute toggle or volume slider).",
-        "Soundtrack is OFF by default on first visit (no auto-play).",
-        "If the user turns the soundtrack on/off (and adjusts mute/volume if provided), the preference persists across page reloads on the same device/browser.",
-        "Audio file is served as a frontend static asset (not via the backend).",
-        "Music controls do not interfere with form submission or results browsing (controls remain accessible and do not cover primary content)."
+        "When the user clicks the Play button in the header, background music becomes audible within 1 second (assuming the browser/audio is allowed and volume is not muted).",
+        "The Play/Pause icon correctly reflects playback state (Play when stopped, Pause when playing).",
+        "If playback fails (e.g., browser blocks it or the file is missing), the app shows a clear English, user-facing message indicating audio could not be played (and does not only log to the console).",
+        "The audio file is served from `/assets/audio/barrera-healthy-eats-theme.mp3` (frontend static asset), and the Play button uses that file."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SoundtrackControls.tsx",
+          "operation": "modify",
+          "description": "Refactor playback flow to attempt `audio.play()` directly from the user click handler (to satisfy browser autoplay policies) while still loading from `/assets/audio/barrera-healthy-eats-theme.mp3`, keep the Play/Pause icon in sync with actual playback (e.g., via audio events), and display a clear English, user-facing error message in the UI when playback fails or the file cannot be loaded. Use existing shadcn/ui components (Button, Popover, Slider) to present controls and any error messaging; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "summary": "Ensure the soundtrack MP3 exists in frontend public assets and is served at the exact URL used by the app.",
+      "acceptanceCriteria": [
+        "`frontend/public/assets/audio/barrera-healthy-eats-theme.mp3` exists and is served by the frontend at runtime.",
+        "Clicking Play does not produce a 404 for `/assets/audio/barrera-healthy-eats-theme.mp3` in the browser network panel."
       ],
       "file_operations": [
         {
           "path": "frontend/public/assets/audio/barrera-healthy-eats-theme.mp3",
           "operation": "create",
-          "description": "Add a soundtrack audio file as a static frontend asset to be loaded directly by the browser (not via the backend)."
-        },
-        {
-          "path": "frontend/src/hooks/useSoundtrackPreferences.ts",
-          "operation": "create",
-          "description": "Create a small hook to manage soundtrack state (enabled/playing, mute/volume) with localStorage persistence and safe defaults (off by default)."
-        },
-        {
-          "path": "frontend/src/components/SoundtrackControls.tsx",
-          "operation": "create",
-          "description": "Create a reusable UI component that displays music controls (at minimum play/pause and mute toggle or volume control) and connects to the preferences hook without triggering auto-play."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire SoundtrackControls into the app layout (e.g., header area or a non-overlapping fixed corner) and ensure the audio element loads frontend/public/assets/audio/barrera-healthy-eats-theme.mp3, remains off by default, and the controls stay accessible without covering form/results content."
+          "description": "Add the soundtrack MP3 at the exact path `frontend/public/assets/audio/barrera-healthy-eats-theme.mp3` so it is served at runtime at `/assets/audio/barrera-healthy-eats-theme.mp3`."
         }
       ]
     }
