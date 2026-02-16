@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-user-facing-no-allergies-option-in-the-allergies-section-that-lets-users-explicitly-indicate-they-have-no-allergies-clears-any-selected-typed-allergies-and-sends-an-empty-allergies-list-to-the-backend-recommendation-query",
-      "featureTitle": "Add a user-facing “No allergies” option in the Allergies section that lets users explicitly indicate they have no allergies, clears any selected/typed allergies, and sends an empty allergies list to the backend recommendation query.",
+      "featureId": "feature-change-the-app-website-name-to-barrera-healthy-eats-everywhere-it-is-user-visible-including-the-html-document-title-and-the-in-app-header-footer-branding-text-that-currently-displays-healthyeats",
+      "featureTitle": "Change the app/website name to “Barrera Healthy Eats” everywhere it is user-visible, including the HTML document title and the in-app header/footer branding text that currently displays “HealthyEats”.",
       "files": [
-        "frontend/src/components/HealthInputForm.tsx"
+        "frontend/index.html",
+        "frontend/src/App.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -15,15 +16,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-14"
+        "REQ-19"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-expand-the-health-conditions-input-to-support-selecting-from-a-broad-built-in-list-of-common-health-conditions-while-still-allowing-custom-conditions-to-be-added-so-users-do-not-need-to-type-most-conditions-manually",
-      "featureTitle": "Expand the Health Conditions input to support selecting from a broad, built-in list of common health conditions (while still allowing custom conditions to be added), so users do not need to type most conditions manually.",
+      "featureId": "feature-add-small-tiger-themed-decorative-elements-to-the-ui-as-subtle-accents-e-g-small-corner-edge-decals-in-the-header-and-or-hero-section-using-generated-static-image-assets-served-from-the-frontend-public-assets-path",
+      "featureTitle": "Add small tiger-themed decorative elements to the UI as subtle accents (e.g., small corner/edge decals in the header and/or hero section) using generated static image assets served from the frontend public assets path.",
       "files": [
-        "frontend/src/components/HealthInputForm.tsx"
+        "frontend/src/App.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -33,7 +34,27 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-15"
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-optional-soundtrack-background-music-feature-that-users-can-control-play-pause-and-volume-or-mute-with-the-soundtrack-off-by-default-and-the-user-s-choice-persisted-locally-so-it-stays-consistent-on-refresh",
+      "featureTitle": "Add an optional soundtrack/background music feature that users can control (play/pause and volume or mute), with the soundtrack off by default and the user’s choice persisted locally so it stays consistent on refresh.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SoundtrackControls.tsx",
+        "frontend/src/hooks/useSoundtrackPreferences.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
       ],
       "confidence": "high"
     }

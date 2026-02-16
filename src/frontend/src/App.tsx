@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { HealthInputForm } from './components/HealthInputForm';
 import { ResultsView } from './components/ResultsView';
+import { SoundtrackControls } from './components/SoundtrackControls';
 import type { Dish } from './backend';
 import { Heart } from 'lucide-react';
 import { SiX, SiFacebook, SiLinkedin } from 'react-icons/si';
@@ -38,7 +39,7 @@ function App() {
 
   const currentYear = new Date().getFullYear();
   const appIdentifier = encodeURIComponent(
-    typeof window !== 'undefined' ? window.location.hostname : 'health-food-app'
+    typeof window !== 'undefined' ? window.location.hostname : 'barrera-healthy-eats'
   );
 
   return (
@@ -46,14 +47,17 @@ function App() {
       {/* Header */}
       <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Heart className="w-6 h-6 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Heart className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">Barrera Healthy Eats</h1>
+                <p className="text-xs text-muted-foreground">Personalized nutrition guidance</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">HealthyEats</h1>
-              <p className="text-xs text-muted-foreground">Personalized nutrition guidance</p>
-            </div>
+            <SoundtrackControls />
           </div>
         </div>
       </header>
@@ -61,7 +65,21 @@ function App() {
       {/* Hero Section */}
       {!showResults && (
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-accent/5 to-background">
-          <div className="container mx-auto px-4 py-12 md:py-16">
+          {/* Tiger Decorations */}
+          <img
+            src="/assets/generated/tiger-decal-left.dim_256x256.png"
+            alt=""
+            className="absolute left-0 top-0 w-32 h-32 md:w-40 md:h-40 opacity-20 pointer-events-none"
+            aria-hidden="true"
+          />
+          <img
+            src="/assets/generated/tiger-decal-right.dim_256x256.png"
+            alt=""
+            className="absolute right-0 bottom-0 w-32 h-32 md:w-40 md:h-40 opacity-20 pointer-events-none"
+            aria-hidden="true"
+          />
+          
+          <div className="container mx-auto px-4 py-12 md:py-16 relative z-[1]">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
@@ -101,7 +119,7 @@ function App() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>© {currentYear} HealthyEats</span>
+              <span>© {currentYear} Barrera Healthy Eats</span>
               <span className="hidden md:inline">•</span>
               <span className="flex items-center gap-1.5">
                 Built with <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> using{' '}

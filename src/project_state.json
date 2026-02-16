@@ -1,16 +1,19 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
+  "projectStateVersion": 13,
   "summary": "Build a mobile health-focused app where users enter age, weight, blood pressure, health conditions (from an expanded selectable list), and allergies (including a “No allergies” option), then tap a “Search Foods” button to receive 1–5 allergen-safe food recommendations that include photos, health explanations, ingredients, cooking steps, nutrition summaries, and a medical disclaimer.",
   "architectural_notes": [
     "Need a strategy for dish photos in results (e.g., generated/static assets vs external image URLs) consistent with 'do not serve images from backend' constraint.",
     "Backend currently has an empty in-memory recipe database; add a seed dataset (and consider a scalable storage approach later) so recommendations can be returned.",
-    "Decide on and maintain a canonical, expanded health-conditions list for the frontend (and how it maps to backend keywords used in recommendation logic)."
+    "Decide on and maintain a canonical, expanded health-conditions list for the frontend (and how it maps to backend keywords used in recommendation logic).",
+    "If adding a soundtrack, decide how audio assets are packaged/served (e.g., frontend static assets) and ensure user controls (mute/volume) and autoplay restrictions are handled."
   ],
   "known_issues": [
-    "Results page shows no food options because the backend recipe/food dataset is empty (no recipes are being added to the database)."
+    "Results page shows no food options because the backend recipe/food dataset is empty (no recipes are being added to the database).",
+    "Food photos are not displaying in the results UI (dish photo/image reference not rendering as expected)."
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
+  "imageRequirements": "## Edit Images\n- Create small tiger decal illustrations in a cohesive style (tiger-decal-left.dim_256x256.png)\n- Create small tiger decal illustrations in a cohesive style (tiger-decal-right.dim_256x256.png)\n- Create a small tiger icon that can be used as a subtle accent (tiger-icon.dim_128x128.png)",
   "existing_features": [
     {
       "id": "feature-build-a-frontend-flow-with-a-health-input-form-age-weight-sicknesses-health-conditions-systolic-and-diastolic-blood-pressure-and-a-primary-button-labeled-exactly-search-foods-that-triggers-fetching-recommendations-and-then-displays-the-results",
@@ -81,6 +84,46 @@
       "title": "Expand the Health Conditions input to support selecting from a broad, built-in list of common health conditions (while still allowing custom conditions to be added), so users do not need to type most conditions manually.",
       "reqIds": [
         "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-results-ui-so-each-recommended-dish-reliably-renders-its-food-photo-when-the-dish-has-a-valid-photo-reference-and-only-shows-the-existing-image-not-available-fallback-when-the-photo-reference-is-missing-empty-or-the-asset-is-not-found",
+      "title": "Fix the results UI so each recommended dish reliably renders its food photo when the dish has a valid photo reference, and only shows the existing “Image not available” fallback when the photo reference is missing/empty or the asset is not found.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-user-facing-no-health-conditions-option-in-the-health-conditions-section-that-lets-users-explicitly-indicate-they-have-no-health-conditions-when-selected-it-clears-any-selected-typed-conditions-and-submits-an-empty-healthconditions-list-in-the-recommendation-request",
+      "title": "Add a user-facing “No health conditions” option in the Health Conditions section that lets users explicitly indicate they have no health conditions; when selected it clears any selected/typed conditions and submits an empty `healthConditions` list in the recommendation request.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-app-website-name-to-barrera-healthy-eats-everywhere-it-is-user-visible-including-the-html-document-title-and-the-in-app-header-footer-branding-text-that-currently-displays-healthyeats",
+      "title": "Change the app/website name to “Barrera Healthy Eats” everywhere it is user-visible, including the HTML document title and the in-app header/footer branding text that currently displays “HealthyEats”.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-small-tiger-themed-decorative-elements-to-the-ui-as-subtle-accents-e-g-small-corner-edge-decals-in-the-header-and-or-hero-section-using-generated-static-image-assets-served-from-the-frontend-public-assets-path",
+      "title": "Add small tiger-themed decorative elements to the UI as subtle accents (e.g., small corner/edge decals in the header and/or hero section) using generated static image assets served from the frontend public assets path.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-soundtrack-background-music-feature-that-users-can-control-play-pause-and-volume-or-mute-with-the-soundtrack-off-by-default-and-the-user-s-choice-persisted-locally-so-it-stays-consistent-on-refresh",
+      "title": "Add an optional soundtrack/background music feature that users can control (play/pause and volume or mute), with the soundtrack off by default and the user’s choice persisted locally so it stays consistent on refresh.",
+      "reqIds": [
+        "REQ-21"
       ],
       "version": 1
     }
@@ -195,10 +238,34 @@
         "REQ-16"
       ],
       "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Add a user-facing “No health conditions” option in the Health Conditions section that clears any selected/typed conditions and sends an empty conditions list to the backend recommendation query",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Change the website/app name to “Barrera Healthy Eats” (update branding/title where displayed)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add small tiger-themed decorative elements to the UI/visual theme (e.g., icons/illustrations as accents)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add an optional soundtrack/background music feature for the app/website (with user controls)",
+      "reqIds": [],
+      "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Health input app with tailored food recommendations",
+  "projectName": "Barrera Healthy Eats",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

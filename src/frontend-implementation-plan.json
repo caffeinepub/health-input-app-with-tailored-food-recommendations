@@ -1,39 +1,92 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Allergies “No allergies” option and expanded selectable health conditions",
+  "title": "Barrera Healthy Eats branding, tiger decals, and optional soundtrack",
   "requirements": [
     {
-      "id": "REQ-14",
-      "summary": "Add a user-facing “No allergies” option that clears selected allergies and submits an empty allergies array, while preventing contradictory allergy state.",
+      "id": "REQ-19",
+      "summary": "Update all user-visible branding text and document title to “Barrera Healthy Eats”.",
       "acceptanceCriteria": [
-        "The Allergies UI includes a clearly labeled option: \"No allergies\".",
-        "When \"No allergies\" is selected, any existing allergy tags are cleared and allergen quick-add buttons are unselected.",
-        "Submitting the form with \"No allergies\" selected results in the request sending allergies: [] (an empty array).",
-        "If the user adds any allergy after selecting \"No allergies\", the UI automatically unselects \"No allergies\" (so the state is never contradictory)."
+        "Browser tab title uses “Barrera Healthy Eats” (replacing the existing “HealthyEats - Personalized Food Recommendations” title).",
+        "The in-app header brand name text shows “Barrera Healthy Eats”.",
+        "The footer copyright line shows “Barrera Healthy Eats”.",
+        "No remaining user-visible occurrences of “HealthyEats” are present in the app UI after the change (excluding code/internal identifiers if any)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/HealthInputForm.tsx",
+          "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Implement a dedicated \"No allergies\" control and state (e.g., boolean flag) in the Allergies section. Use existing shadcn-ui components already used in the file (Button/Badge/Input/Label) to render a clear toggle for \"No allergies\"; when enabled, clear allergyInput and allergies, and ensure common-allergy quick-add buttons reflect the cleared state. Update allergy add/remove handlers so adding any allergy automatically disables \"No allergies\". Ensure form submission continues to pass allergies as an empty array when \"No allergies\" is selected. Verify the component's usage instructions before implementing."
+          "description": "Replace the HTML document <title> with “Barrera Healthy Eats” so the browser tab title matches the new branding."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update header and footer user-visible brand text from “HealthyEats” to “Barrera Healthy Eats”, and scan this file for any other user-visible occurrences to update."
         }
       ]
     },
     {
-      "id": "REQ-15",
-      "summary": "Expand Health Conditions to include a broad built-in selectable list (mobile-usable) while keeping support for custom conditions and removable tags.",
+      "id": "REQ-20",
+      "summary": "Add subtle tiger decorative decals (static assets) to the header and/or hero without affecting usability in light/dark mode.",
       "acceptanceCriteria": [
-        "The Health Conditions UI includes a selectable list of many common conditions (significantly more than the current helper text), presented in a way that is usable on mobile (e.g., searchable list and/or quick-add chips/buttons).",
-        "Users can still add a custom condition not present in the list.",
-        "Selected health conditions are shown as removable tags (as they are today).",
-        "Selected conditions are submitted to the backend in the existing healthConditions array field."
+        "At least two tiger decorative images are rendered in the UI as non-intrusive decorations (they must not block or overlap key form controls or results content on common screen sizes).",
+        "Tiger decorations load from frontend static assets (not from the backend).",
+        "Decorations are purely ornamental and do not add new navigation or functional flows.",
+        "Decorations look acceptable in both light and dark mode (no harsh contrast or illegible overlays)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/HealthInputForm.tsx",
+          "path": "frontend/public/assets/generated/tiger-decal-left.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated static tiger decal asset at the required path so it can be served directly by the frontend."
+        },
+        {
+          "path": "frontend/public/assets/generated/tiger-decal-right.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated static tiger decal asset at the required path so it can be served directly by the frontend."
+        },
+        {
+          "path": "frontend/public/assets/generated/tiger-icon.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static tiger icon asset at the required path so it can be served directly by the frontend."
+        },
+        {
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a built-in, broad COMMON_HEALTH_CONDITIONS list (many items) and a simple mobile-friendly selection UI (e.g., searchable/filterable list with quick-add buttons/chips) using existing shadcn-ui components (Input/Button/Badge/Label/Card) already present in the project. Keep the existing custom condition input flow, but enhance handleAddCondition to support adding from the built-in list and from free text (normalizing and preventing duplicates). Maintain removable tags display for selected conditions and ensure submit continues sending the existing healthConditions array unchanged in shape. Verify the component's usage instructions before implementing."
+          "description": "Render at least two purely decorative tiger images (using frontend/public/assets/generated/tiger-decal-left.dim_256x256.png and frontend/public/assets/generated/tiger-decal-right.dim_256x256.png, optionally frontend/public/assets/generated/tiger-icon.dim_128x128.png) as subtle accents in the header and/or hero section with positioning/z-index/pointer-event settings that avoid covering primary content and remain visually acceptable in both light and dark mode."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Add optional background music with play/pause and mute/volume controls, default off, persisting preferences locally.",
+      "acceptanceCriteria": [
+        "A visible music control UI exists (at minimum: play/pause and a mute toggle or volume slider).",
+        "Soundtrack is OFF by default on first visit (no auto-play).",
+        "If the user turns the soundtrack on/off (and adjusts mute/volume if provided), the preference persists across page reloads on the same device/browser.",
+        "Audio file is served as a frontend static asset (not via the backend).",
+        "Music controls do not interfere with form submission or results browsing (controls remain accessible and do not cover primary content)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/audio/barrera-healthy-eats-theme.mp3",
+          "operation": "create",
+          "description": "Add a soundtrack audio file as a static frontend asset to be loaded directly by the browser (not via the backend)."
+        },
+        {
+          "path": "frontend/src/hooks/useSoundtrackPreferences.ts",
+          "operation": "create",
+          "description": "Create a small hook to manage soundtrack state (enabled/playing, mute/volume) with localStorage persistence and safe defaults (off by default)."
+        },
+        {
+          "path": "frontend/src/components/SoundtrackControls.tsx",
+          "operation": "create",
+          "description": "Create a reusable UI component that displays music controls (at minimum play/pause and mute toggle or volume control) and connects to the preferences hook without triggering auto-play."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire SoundtrackControls into the app layout (e.g., header area or a non-overlapping fixed corner) and ensure the audio element loads frontend/public/assets/audio/barrera-healthy-eats-theme.mp3, remains off by default, and the controls stay accessible without covering form/results content."
         }
       ]
     }

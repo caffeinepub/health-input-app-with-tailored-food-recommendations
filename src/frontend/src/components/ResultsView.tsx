@@ -140,7 +140,7 @@ export function ResultsView({ results, formData, onEditInputs }: ResultsViewProp
       ) : (
         <div className="space-y-6">
           {results.map((dish, index) => (
-            <Card key={`${dish.name}-${index}`} className="overflow-hidden shadow-lg">
+            <Card key={`${dish.name}-${dish.photoReference}-${index}`} className="overflow-hidden shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">

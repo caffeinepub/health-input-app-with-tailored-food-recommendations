@@ -1,41 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T19:53:41.051Z",
-  "summary": "Frontend changes appear to add a “No allergies” option and a large selectable health-conditions list (with custom entries). Backend changes add case-insensitive allergy filtering and a migration-based recipe initialization, but the backend still returns up to 50 dishes (not 1–5) and the seeded recipes include external image URLs, which violates the constraint that the backend must not serve images and photos must be frontend static assets.",
+  "generatedAt": "2026-02-16T01:21:41.154Z",
+  "summary": "Branding was updated in the HTML title and in-app header, tiger decal images were added to the hero section, and a new optional soundtrack control with persisted local preferences was implemented. However, the diff does not show footer branding updates, nor does it include the required static asset files (tiger images and the MP3) referenced by the new UI.",
   "missing_requirements": [
     {
-      "id": "REQ-13",
-      "requirement": "Seed the in-canister recipe database so getFoodRecommendations (with empty allergies list) returns between 1 and 5 Dish items immediately after deployment, with a sufficiently large dataset (~30 dishes) and full Dish fields.",
-      "reason": "Although a migration module initializes recipes when the database is empty, getFoodRecommendations returns up to 50 items (and returns all recipes when allergies is empty via getLimitedRecipes(50)), which does not meet the 1–5 items acceptance criteria. Also, the seeded dataset size shown in the diff snippet appears to be ~22 recipes (and the file is truncated), so it is not clearly meeting the ~30-dish target based on available evidence.",
+      "id": "REQ-19",
+      "requirement": "Update footer branding text (copyright line) to show “Barrera Healthy Eats” and remove remaining user-visible “HealthyEats” occurrences.",
+      "reason": "The diff shows the header branding updated and the document title updated, but the App.tsx content is truncated before the footer and other UI areas, so there is no evidence the footer text or all other user-visible occurrences were updated.",
       "evidence": [
-        "backend/main.mo (getFoodRecommendations returns getLimitedRecipes(50) when allergies.size()==0; filtered results sliced to 0..50)",
-        "backend/migration.mo (initializeRecipes list shows ~22 entries in snippet; file truncated)"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Backend seeds dish photoReference values with external URL strings (e.g., shorturl.at links).",
-      "reason": "The BuildRequest constraint explicitly says not to serve images from the backend and that dish photos must remain frontend static assets (with graceful fallback). Seeding external URLs from the backend conflicts with that constraint; photoReference should be empty (to trigger fallback) or reference frontend static assets, not backend-served/external images.",
-      "evidence": [
-        "backend/migration.mo (e.g., defaultSalad photoReference = \"https://shorturl.at/cmHKT\"; chickenStirFry photoReference = \"https://shorturl.at/qCJS1\"; oatPancakes, veganChili, etc.)"
+        "frontend/src/App.tsx (truncated)",
+        "frontend/index.html"
       ]
     },
     {
-      "description": "Backend recommendation limit changed/implemented as 50 items returned rather than 1–5 items.",
-      "reason": "REQ-13 acceptance criteria call for getFoodRecommendations to return between 1 and 5 Dish items for valid inputs (with seeded data). Returning up to 50 is not requested and conflicts with the stated acceptance criteria.",
+      "id": "REQ-20",
+      "requirement": "Serve tiger decorative images as static frontend assets (generated images) from the frontend public assets path.",
+      "reason": "The UI references tiger decal PNGs, but the diff does not include any added static image asset files, so there is no evidence the images actually exist in the frontend assets.",
       "evidence": [
-        "backend/main.mo (getLimitedRecipes(50); filtered results slicedToArray(0, 50))"
+        "frontend/src/App.tsx (references /assets/generated/tiger-decal-left.dim_256x256.png and /assets/generated/tiger-decal-right.dim_256x256.png)"
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "requirement": "Serve the soundtrack audio file as a static frontend asset.",
+      "reason": "SoundtrackControls references an MP3 under /assets/audio/barrera-healthy-eats-theme.mp3, but the diff does not include adding that audio file (or any assets folder changes), so there is no evidence the audio asset exists.",
+      "evidence": [
+        "frontend/src/components/SoundtrackControls.tsx (new Audio('/assets/audio/barrera-healthy-eats-theme.mp3'))"
       ]
     }
   ],
-  "confidence": 0.74,
+  "hallucinated_features": [],
+  "confidence": 0.68,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
-    "frontend-file-summaries.txt",
-    "frontend/src/components/HealthInputForm.tsx",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/SoundtrackControls.tsx",
+    "frontend/src/hooks/useSoundtrackPreferences.ts",
     "project_state.json"
   ]
 }

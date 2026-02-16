@@ -3,9 +3,7 @@ import Map "mo:core/Map";
 import Set "mo:core/Set";
 import Iter "mo:core/Iter";
 import Array "mo:core/Array";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   type Dish = {
     name : Text;

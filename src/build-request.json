@@ -1,97 +1,86 @@
 {
   "kind": "build_request",
-  "title": "Fix empty recommendations, add “No allergies”, and expand selectable health conditions",
+  "title": "Update branding to “Barrera Healthy Eats”, add tiger decorations, and add optional soundtrack",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-13",
-      "text": "Ensure the backend returns non-empty food recommendations by seeding the in-canister recipe database with a built-in set of real dishes available immediately after deployment (no manual addRecipe calls required).",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "It shows no food"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Calling getFoodRecommendations with valid inputs and an empty allergies list returns between 1 and 5 Dish items (unless the dataset truly contains fewer than 1 dish, which must not happen after seeding).",
-        "Seeded dishes include the full Dish fields already used by the frontend: name, photoReference (can be empty to trigger fallback), healthExplanation, ingredients, instructions, nutritionSummary (calories, sodium, protein, carbohydrates, fats).",
-        "The seeded dataset is large enough to avoid frequent empty results for typical inputs (target at least ~30 dishes, within code-size limits)."
-      ]
-    },
-    {
-      "id": "REQ-14",
-      "text": "Add a user-facing “No allergies” option in the Allergies section that lets users explicitly indicate they have no allergies, clears any selected/typed allergies, and sends an empty allergies list to the backend recommendation query.",
+      "id": "REQ-19",
+      "text": "Change the app/website name to “Barrera Healthy Eats” everywhere it is user-visible, including the HTML document title and the in-app header/footer branding text that currently displays “HealthyEats”.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "can you add an option of no allergies?"
+          "Oh can you change the website name to Barrera Healthy Eats?"
         ]
       },
       "acceptanceCriteria": [
-        "The Allergies UI includes a clearly labeled option: \"No allergies\".",
-        "When \"No allergies\" is selected, any existing allergy tags are cleared and allergen quick-add buttons are unselected.",
-        "Submitting the form with \"No allergies\" selected results in the request sending allergies: [] (an empty array).",
-        "If the user adds any allergy after selecting \"No allergies\", the UI automatically unselects \"No allergies\" (so the state is never contradictory)."
+        "Browser tab title uses “Barrera Healthy Eats” (replacing the existing “HealthyEats - Personalized Food Recommendations” title).",
+        "The in-app header brand name text shows “Barrera Healthy Eats”.",
+        "The footer copyright line shows “Barrera Healthy Eats”.",
+        "No remaining user-visible occurrences of “HealthyEats” are present in the app UI after the change (excluding code/internal identifiers if any)."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Expand the Health Conditions input to support selecting from a broad, built-in list of common health conditions (while still allowing custom conditions to be added), so users do not need to type most conditions manually.",
+      "id": "REQ-20",
+      "text": "Add small tiger-themed decorative elements to the UI as subtle accents (e.g., small corner/edge decals in the header and/or hero section) using generated static image assets served from the frontend public assets path.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Also add like all the Health conditions you can"
+          "And maybe add little tigers as decorations?"
         ]
       },
       "acceptanceCriteria": [
-        "The Health Conditions UI includes a selectable list of many common conditions (significantly more than the current helper text), presented in a way that is usable on mobile (e.g., searchable list and/or quick-add chips/buttons).",
-        "Users can still add a custom condition not present in the list.",
-        "Selected health conditions are shown as removable tags (as they are today).",
-        "Selected conditions are submitted to the backend in the existing healthConditions array field."
+        "At least two tiger decorative images are rendered in the UI as non-intrusive decorations (they must not block or overlap key form controls or results content on common screen sizes).",
+        "Tiger decorations load from frontend static assets (not from the backend).",
+        "Decorations are purely ornamental and do not add new navigation or functional flows.",
+        "Decorations look acceptable in both light and dark mode (no harsh contrast or illegible overlays)."
       ]
     },
     {
-      "id": "REQ-16",
-      "text": "Make allergy filtering in getFoodRecommendations robust to common user input variations by applying case-insensitive matching between user allergies and dish ingredients, and ensure that an empty allergies list disables allergen filtering.",
-      "target": "backend",
+      "id": "REQ-21",
+      "text": "Add an optional soundtrack/background music feature that users can control (play/pause and volume or mute), with the soundtrack off by default and the user’s choice persisted locally so it stays consistent on refresh.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "It shows no food, and can you add an option of no allergies?"
+          "And maybe if you can, add a soundtrack?"
         ]
       },
       "acceptanceCriteria": [
-        "If allergies is an empty array, getFoodRecommendations does not filter out dishes based on ingredients.",
-        "Allergy filtering compares normalized values (at minimum: case-insensitive) so that inputs like \"eggs\" correctly match ingredients like \"Eggs\".",
-        "With a seeded dataset, providing a common allergy (e.g., \"eggs\") reduces results by filtering dishes containing that allergen, rather than returning an empty list due to casing mismatches."
+        "A visible music control UI exists (at minimum: play/pause and a mute toggle or volume slider).",
+        "Soundtrack is OFF by default on first visit (no auto-play).",
+        "If the user turns the soundtrack on/off (and adjusts mute/volume if provided), the preference persists across page reloads on the same device/browser.",
+        "Audio file is served as a frontend static asset (not via the backend).",
+        "Music controls do not interfere with form submission or results browsing (controls remain accessible and do not cover primary content)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo.",
-    "Do not edit frontend files in immutablePaths (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui).",
-    "Use English for any user-facing text.",
-    "Do not serve images from the backend; dish photos must continue to be frontend static assets and gracefully fall back when missing."
+    "Do not edit any files under frontend/src/components/ui (shadcn UI sources are read-only).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Serve decorative images and soundtrack audio as static frontend assets; do not route them through the Motoko backend.",
+    "Keep backend architecture as a single Motoko actor; no backend changes are required for these UI-only additions."
   ],
   "nonGoals": [
-    "Do not add third-party authentication beyond Internet Identity.",
-    "Do not add external databases or non-Internet-Computer backend services.",
-    "Do not claim medical accuracy; the app remains general wellness guidance (not medical advice)."
+    "Fixing the existing dish photo rendering issue or backend recipe seeding issues (not requested in this change).",
+    "Adding real-time or streaming features (e.g., WebSockets) for audio.",
+    "Implementing third-party music integrations (e.g., Spotify/Apple Music).",
+    "Adding authentication changes or user accounts beyond existing Internet Identity support."
   ],
   "imageRequirements": {
     "required": [],
-    "edits": []
+    "edits": [
+      "Create small tiger decal illustrations in a cohesive style (tiger-decal-left.dim_256x256.png)",
+      "Create small tiger decal illustrations in a cohesive style (tiger-decal-right.dim_256x256.png)",
+      "Create a small tiger icon that can be used as a subtle accent (tiger-icon.dim_128x128.png)"
+    ]
   },
   "userProfileUpdate": {
     "goalsToAdd": [],

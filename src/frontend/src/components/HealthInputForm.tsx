@@ -90,6 +90,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
   const [healthConditions, setHealthConditions] = useState<string[]>(initialData.healthConditions);
   const [conditionInput, setConditionInput] = useState('');
   const [conditionSearchTerm, setConditionSearchTerm] = useState('');
+  const [noHealthConditions, setNoHealthConditions] = useState(initialData.healthConditions.length === 0);
   const [allergies, setAllergies] = useState<string[]>(initialData.allergies);
   const [allergyInput, setAllergyInput] = useState('');
   const [noAllergies, setNoAllergies] = useState(initialData.allergies.length === 0);
@@ -106,11 +107,31 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
       setHealthConditions([...healthConditions, conditionToAdd]);
       setConditionInput('');
       setConditionSearchTerm('');
+      // Automatically uncheck "No health conditions" when adding a condition
+      setNoHealthConditions(false);
     }
   };
 
   const handleRemoveCondition = (condition: string) => {
-    setHealthConditions(healthConditions.filter((c) => c !== condition));
+    const newConditions = healthConditions.filter((c) => c !== condition);
+    setHealthConditions(newConditions);
+    // If all conditions removed, set noHealthConditions to true
+    if (newConditions.length === 0) {
+      setNoHealthConditions(true);
+    }
+  };
+
+  const handleNoHealthConditionsToggle = () => {
+    if (!noHealthConditions) {
+      // User is selecting "No health conditions" - clear all conditions
+      setHealthConditions([]);
+      setConditionInput('');
+      setConditionSearchTerm('');
+      setNoHealthConditions(true);
+    } else {
+      // User is deselecting "No health conditions"
+      setNoHealthConditions(false);
+    }
   };
 
   const handleAddAllergy = (allergy?: string) => {
@@ -166,7 +187,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
     const formData: HealthFormData = {
       age,
       weight,
-      healthConditions,
+      healthConditions: noHealthConditions ? [] : healthConditions,
       systolicBP,
       diastolicBP,
       allergies: noAllergies ? [] : allergies,
@@ -182,7 +203,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
       {
         age: BigInt(age),
         weight: BigInt(weight),
-        healthConditions,
+        healthConditions: noHealthConditions ? [] : healthConditions,
         systolicBP: BigInt(systolicBP),
         diastolicBP: BigInt(diastolicBP),
         allergies: noAllergies ? [] : allergies,
@@ -192,338 +213,281 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
           onSubmit(formData, recommendations);
         },
         onError: (error) => {
-          setValidationError(error instanceof Error ? error.message : 'Failed to get recommendations');
+          setValidationError(`Failed to get recommendations: ${error.message}`);
         },
       }
     );
   };
 
-  // Filter health conditions based on search term
-  const filteredConditions = COMMON_HEALTH_CONDITIONS.filter(
-    (condition) =>
-      condition.toLowerCase().includes(conditionSearchTerm.toLowerCase()) &&
-      !healthConditions.some((c) => c.toLowerCase() === condition.toLowerCase())
+  const filteredConditions = COMMON_HEALTH_CONDITIONS.filter((condition) =>
+    condition.toLowerCase().includes(conditionSearchTerm.toLowerCase())
   );
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card className="shadow-lg border-border/50">
-        <CardHeader className="space-y-2 pb-6">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-primary" />
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl flex items-center gap-2">
+            <Activity className="w-6 h-6 text-primary" />
+            Your Health Information
+          </CardTitle>
+          <CardDescription>
+            Enter your health details to receive personalized food recommendations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Age and Weight */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="age">Age (years)</Label>
+              <Input
+                id="age"
+                type="number"
+                placeholder="e.g., 30"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                min="1"
+                max="120"
+              />
             </div>
-            <div>
-              <CardTitle className="text-2xl">Your Health Profile</CardTitle>
-              <CardDescription>
-                Tell us about your health so we can recommend the best foods for you
-              </CardDescription>
+            <div className="space-y-2">
+              <Label htmlFor="weight">Weight (kg)</Label>
+              <Input
+                id="weight"
+                type="number"
+                placeholder="e.g., 70"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                min="1"
+                max="500"
+              />
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Age and Weight */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Blood Pressure */}
+          <div className="space-y-2">
+            <Label>Blood Pressure (mmHg)</Label>
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="age" className="text-sm font-medium">
-                  Age (years)
+                <Label htmlFor="systolic" className="text-xs text-muted-foreground">
+                  Systolic (top number)
                 </Label>
                 <Input
-                  id="age"
+                  id="systolic"
                   type="number"
-                  placeholder="e.g., 35"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  min="1"
-                  max="120"
-                  className="h-11"
+                  placeholder="e.g., 120"
+                  value={systolicBP}
+                  onChange={(e) => setSystolicBP(e.target.value)}
+                  min="60"
+                  max="250"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="weight" className="text-sm font-medium">
-                  Weight (kg)
+                <Label htmlFor="diastolic" className="text-xs text-muted-foreground">
+                  Diastolic (bottom number)
                 </Label>
                 <Input
-                  id="weight"
+                  id="diastolic"
                   type="number"
-                  placeholder="e.g., 70"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  min="1"
-                  max="500"
-                  className="h-11"
+                  placeholder="e.g., 80"
+                  value={diastolicBP}
+                  onChange={(e) => setDiastolicBP(e.target.value)}
+                  min="40"
+                  max="150"
                 />
               </div>
             </div>
+          </div>
 
-            {/* Blood Pressure */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Blood Pressure (mmHg)</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="systolic" className="text-xs text-muted-foreground">
-                    Systolic (top number)
-                  </Label>
-                  <Input
-                    id="systolic"
-                    type="number"
-                    placeholder="e.g., 120"
-                    value={systolicBP}
-                    onChange={(e) => setSystolicBP(e.target.value)}
-                    min="60"
-                    max="250"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="diastolic" className="text-xs text-muted-foreground">
-                    Diastolic (bottom number)
-                  </Label>
-                  <Input
-                    id="diastolic"
-                    type="number"
-                    placeholder="e.g., 80"
-                    value={diastolicBP}
-                    onChange={(e) => setDiastolicBP(e.target.value)}
-                    min="40"
-                    max="150"
-                    className="h-11"
-                  />
-                </div>
-              </div>
+          {/* Health Conditions */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Health Conditions</Label>
+              <Button
+                type="button"
+                variant={noHealthConditions ? 'default' : 'outline'}
+                size="sm"
+                onClick={handleNoHealthConditionsToggle}
+                className="text-xs"
+              >
+                {noHealthConditions ? '✓ ' : ''}No health conditions
+              </Button>
             </div>
 
-            {/* Health Conditions */}
-            <div className="space-y-3">
-              <Label htmlFor="conditions" className="text-sm font-medium">
-                Health Conditions
-              </Label>
-              
-              {/* Search/Filter Input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="condition-search"
-                  type="text"
-                  placeholder="Search conditions or type your own..."
-                  value={conditionSearchTerm}
-                  onChange={(e) => setConditionSearchTerm(e.target.value)}
-                  className="h-11 pl-10"
-                />
-              </div>
-
-              {/* Custom condition input */}
-              <div className="flex gap-2">
-                <Input
-                  id="conditions"
-                  type="text"
-                  placeholder="Add a custom condition"
-                  value={conditionInput}
-                  onChange={(e) => setConditionInput(e.target.value)}
-                  onKeyPress={handleConditionKeyPress}
-                  className="h-11 flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleAddCondition()}
-                  disabled={!conditionInput.trim()}
-                  className="h-11 w-11 shrink-0"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* Filtered common conditions */}
-              {conditionSearchTerm && filteredConditions.length > 0 && (
-                <div className="max-h-48 overflow-y-auto border border-border rounded-lg p-2 space-y-1">
-                  {filteredConditions.slice(0, 10).map((condition) => (
-                    <Button
-                      key={condition}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleAddCondition(condition)}
-                      className="w-full justify-start h-9 text-sm font-normal"
-                    >
-                      <Plus className="w-3 h-3 mr-2" />
-                      {condition}
-                    </Button>
-                  ))}
+            {!noHealthConditions && (
+              <>
+                {/* Search/Add Custom Condition */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search or add custom condition..."
+                      value={conditionInput}
+                      onChange={(e) => {
+                        setConditionInput(e.target.value);
+                        setConditionSearchTerm(e.target.value);
+                      }}
+                      onKeyPress={handleConditionKeyPress}
+                      className="pl-9"
+                      disabled={noHealthConditions}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => handleAddCondition()}
+                    disabled={!conditionInput.trim() || noHealthConditions}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
-              )}
 
-              {/* Quick-add common conditions (when not searching) */}
-              {!conditionSearchTerm && (
-                <div className="flex flex-wrap gap-2">
-                  {COMMON_HEALTH_CONDITIONS.slice(0, 12).map((condition) => {
-                    const isSelected = healthConditions.some(
-                      (c) => c.toLowerCase() === condition.toLowerCase()
-                    );
-                    if (isSelected) return null;
-                    return (
+                {/* Quick Add Common Conditions */}
+                {conditionSearchTerm && filteredConditions.length > 0 && (
+                  <div className="border border-border rounded-lg p-3 bg-muted/30 max-h-48 overflow-y-auto">
+                    <p className="text-xs text-muted-foreground mb-2">Quick add:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {filteredConditions.slice(0, 10).map((condition) => (
+                        <Button
+                          key={condition}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleAddCondition(condition)}
+                          className="text-xs h-7"
+                          disabled={healthConditions.some(
+                            (c) => c.toLowerCase() === condition.toLowerCase()
+                          )}
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          {condition}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Selected Conditions */}
+                {healthConditions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
+                    {healthConditions.map((condition) => (
+                      <Badge key={condition} variant="secondary" className="gap-1 pr-1">
+                        {condition}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCondition(condition)}
+                          className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Allergies */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Food Allergies</Label>
+              <Button
+                type="button"
+                variant={noAllergies ? 'default' : 'outline'}
+                size="sm"
+                onClick={handleNoAllergiesToggle}
+                className="text-xs"
+              >
+                {noAllergies ? '✓ ' : ''}No allergies
+              </Button>
+            </div>
+
+            {!noAllergies && (
+              <>
+                {/* Add Custom Allergy */}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add custom allergy..."
+                    value={allergyInput}
+                    onChange={(e) => setAllergyInput(e.target.value)}
+                    onKeyPress={handleAllergyKeyPress}
+                    disabled={noAllergies}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => handleAddAllergy()}
+                    disabled={!allergyInput.trim() || noAllergies}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Quick Add Common Allergies */}
+                <div className="border border-border rounded-lg p-3 bg-muted/30">
+                  <p className="text-xs text-muted-foreground mb-2">Common allergies:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {COMMON_ALLERGIES.map((allergy) => (
                       <Button
-                        key={condition}
+                        key={allergy}
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => handleAddCondition(condition)}
-                        className="h-8 text-xs"
+                        onClick={() => handleAddAllergy(allergy)}
+                        className="text-xs h-7"
+                        disabled={allergies.some((a) => a.toLowerCase() === allergy.toLowerCase())}
                       >
                         <Plus className="w-3 h-3 mr-1" />
-                        {condition}
+                        {allergy}
                       </Button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              )}
 
-              {/* Selected conditions */}
-              {healthConditions.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {healthConditions.map((condition) => (
-                    <Badge
-                      key={condition}
-                      variant="secondary"
-                      className="pl-3 pr-2 py-1.5 text-sm capitalize"
-                    >
-                      {condition}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveCondition(condition)}
-                        className="ml-2 hover:text-destructive transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Allergies */}
-            <div className="space-y-3">
-              <Label htmlFor="allergies" className="text-sm font-medium">
-                Allergies
-              </Label>
-
-              {/* No Allergies Toggle */}
-              <div className="flex items-center gap-2 p-3 border border-border rounded-lg bg-muted/30">
-                <Button
-                  type="button"
-                  variant={noAllergies ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={handleNoAllergiesToggle}
-                  className="h-9"
-                >
-                  {noAllergies ? '✓ No allergies' : 'No allergies'}
-                </Button>
-                <span className="text-xs text-muted-foreground">
-                  Select if you have no food allergies
-                </span>
-              </div>
-
-              {/* Allergy input (disabled when "No allergies" is selected) */}
-              <div className="flex gap-2">
-                <Input
-                  id="allergies"
-                  type="text"
-                  placeholder="Type an allergy or select from common ones below"
-                  value={allergyInput}
-                  onChange={(e) => setAllergyInput(e.target.value)}
-                  onKeyPress={handleAllergyKeyPress}
-                  disabled={noAllergies}
-                  className="h-11 flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleAddAllergy()}
-                  disabled={!allergyInput.trim() || noAllergies}
-                  className="h-11 w-11 shrink-0"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* Common allergies quick-add */}
-              <div className="flex flex-wrap gap-2">
-                {COMMON_ALLERGIES.map((allergy) => {
-                  const isSelected = allergies.some((a) => a.toLowerCase() === allergy.toLowerCase());
-                  return (
-                    <Button
-                      key={allergy}
-                      type="button"
-                      variant={isSelected ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        if (isSelected) {
-                          handleRemoveAllergy(allergies.find((a) => a.toLowerCase() === allergy.toLowerCase())!);
-                        } else {
-                          handleAddAllergy(allergy);
-                        }
-                      }}
-                      disabled={noAllergies}
-                      className="h-8 text-xs"
-                    >
-                      {allergy}
-                    </Button>
-                  );
-                })}
-              </div>
-
-              {/* Selected allergies */}
-              {allergies.length > 0 && !noAllergies && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {allergies.map((allergy) => (
-                    <Badge
-                      key={allergy}
-                      variant="secondary"
-                      className="pl-3 pr-2 py-1.5 text-sm capitalize"
-                    >
-                      {allergy}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveAllergy(allergy)}
-                        className="ml-2 hover:text-destructive transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Validation Error */}
-            {validationError && (
-              <Alert variant="destructive">
-                <AlertDescription>{validationError}</AlertDescription>
-              </Alert>
+                {/* Selected Allergies */}
+                {allergies.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-destructive/10 rounded-lg">
+                    {allergies.map((allergy) => (
+                      <Badge key={allergy} variant="destructive" className="gap-1 pr-1">
+                        {allergy}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAllergy(allergy)}
+                          className="ml-1 hover:bg-destructive/40 rounded-full p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
+          </div>
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isPending}
-              className="w-full h-12 text-base font-semibold"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                'Search Foods'
-              )}
-            </Button>
-          </form>
+          {/* Validation Error */}
+          {validationError && (
+            <Alert variant="destructive">
+              <AlertDescription>{validationError}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Submit Button */}
+          <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+            {isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Searching Foods...
+              </>
+            ) : (
+              'Search Foods'
+            )}
+          </Button>
         </CardContent>
       </Card>
-    </div>
+    </form>
   );
 }
