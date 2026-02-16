@@ -14,6 +14,7 @@ export type HealthFormData = {
   systolicBP: string;
   diastolicBP: string;
   allergies: string[];
+  favoriteFood: string;
 };
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
     systolicBP: '',
     diastolicBP: '',
     allergies: [],
+    favoriteFood: '',
   });
   const [results, setResults] = useState<Dish[] | null>(null);
   const [showResults, setShowResults] = useState(false);

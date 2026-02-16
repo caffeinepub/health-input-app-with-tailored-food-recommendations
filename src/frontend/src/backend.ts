@@ -106,7 +106,7 @@ export interface NutritionSummary {
 }
 export interface backendInterface {
     addRecipe(name: string, photoReference: string, healthExplanation: string, ingredients: Array<string>, instructions: Array<string>, nutritionSummary: NutritionSummary): Promise<void>;
-    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>): Promise<Array<Dish>>;
+    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>, favoriteFood: string | null): Promise<Array<Dish>>;
     getGreyZoneIngredients(): Promise<Array<string>>;
 }
 export class Backend implements backendInterface {
@@ -125,17 +125,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getFoodRecommendations(arg0: bigint, arg1: bigint, arg2: Array<string>, arg3: bigint, arg4: bigint, arg5: Array<string>): Promise<Array<Dish>> {
+    async getFoodRecommendations(arg0: bigint, arg1: bigint, arg2: Array<string>, arg3: bigint, arg4: bigint, arg5: Array<string>, arg6: string | null): Promise<Array<Dish>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5);
+                const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg6));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5);
+            const result = await this.actor.getFoodRecommendations(arg0, arg1, arg2, arg3, arg4, arg5, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg6));
             return result;
         }
     }
@@ -153,6 +153,9 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+}
+function to_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+    return value === null ? candid_none() : candid_some(value);
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -24,6 +24,6 @@ export interface NutritionSummary {
 }
 export interface backendInterface {
     addRecipe(name: string, photoReference: string, healthExplanation: string, ingredients: Array<string>, instructions: Array<string>, nutritionSummary: NutritionSummary): Promise<void>;
-    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>): Promise<Array<Dish>>;
+    getFoodRecommendations(age: bigint, weight: bigint, healthConditions: Array<string>, systolicBP: bigint, diastolicBP: bigint, allergies: Array<string>, favoriteFood: string | null): Promise<Array<Dish>>;
     getGreyZoneIngredients(): Promise<Array<string>>;
 }

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Apple, AlertCircle, User, Activity, Heart, ChefHat } from 'lucide-react';
+import { ArrowLeft, Apple, AlertCircle, User, Activity, Heart, ChefHat, Star } from 'lucide-react';
 import { DishImage } from './DishImage';
 import { formatNutritionValue } from '../lib/format';
 import type { Dish } from '../backend';
@@ -16,6 +16,11 @@ interface ResultsViewProps {
 }
 
 export function ResultsView({ results, formData, onEditInputs }: ResultsViewProps) {
+  // Detect Star Meal by checking if dish name starts with "Star Meal:"
+  const isStarMeal = (dish: Dish): boolean => {
+    return dish.name.toLowerCase().startsWith('star meal:');
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Back Button */}
@@ -70,7 +75,7 @@ export function ResultsView({ results, formData, onEditInputs }: ResultsViewProp
               </div>
             </div>
           </div>
-          {(formData.healthConditions.length > 0 || formData.allergies.length > 0) && (
+          {(formData.healthConditions.length > 0 || formData.allergies.length > 0 || formData.favoriteFood) && (
             <>
               <Separator className="my-4" />
               <div className="space-y-3">
@@ -96,6 +101,15 @@ export function ResultsView({ results, formData, onEditInputs }: ResultsViewProp
                         </Badge>
                       ))}
                     </div>
+                  </div>
+                )}
+                {formData.favoriteFood && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">Favorite Food:</p>
+                    <Badge variant="secondary" className="capitalize">
+                      <Star className="w-3 h-3 mr-1 fill-amber-500 text-amber-500" />
+                      {formData.favoriteFood}
+                    </Badge>
                   </div>
                 )}
               </div>
@@ -139,111 +153,138 @@ export function ResultsView({ results, formData, onEditInputs }: ResultsViewProp
         </Card>
       ) : (
         <div className="space-y-6">
-          {results.map((dish, index) => (
-            <Card key={`${dish.name}-${dish.photoReference}-${index}`} className="overflow-hidden shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
-                    <ChefHat className="w-5 h-5 text-accent-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-2xl">{dish.name}</CardTitle>
-                    <CardDescription className="mt-2 text-base leading-relaxed">
-                      {dish.healthExplanation}
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Dish Image */}
-                <DishImage photoReference={dish.photoReference} dishName={dish.name} />
-
-                <Separator />
-
-                {/* Ingredients */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                      1
-                    </span>
-                    Ingredients
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-8">
-                    {dish.ingredients.map((ingredient, idx) => (
-                      <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        <span>{ingredient}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <Separator />
-
-                {/* Instructions */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                      2
-                    </span>
-                    Cooking Instructions
-                  </h3>
-                  <ol className="space-y-3 pl-8">
-                    {dish.instructions.map((instruction, idx) => (
-                      <li key={idx} className="text-sm text-muted-foreground flex gap-3">
-                        <span className="font-semibold text-primary shrink-0">{idx + 1}.</span>
-                        <span>{instruction}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-
-                <Separator />
-
-                {/* Nutrition Summary */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                      3
-                    </span>
-                    Nutrition Summary
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-muted/30 rounded-lg p-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {formatNutritionValue(dish.nutritionSummary.calories)}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Calories</p>
+          {results.map((dish, index) => {
+            const isStarMealDish = isStarMeal(dish);
+            return (
+              <Card
+                key={`${dish.name}-${dish.photoReference}-${index}`}
+                className={`overflow-hidden shadow-lg ${
+                  isStarMealDish
+                    ? 'border-amber-500/50 bg-gradient-to-br from-amber-50/50 to-amber-100/30 dark:from-amber-950/20 dark:to-amber-900/10'
+                    : ''
+                }`}
+              >
+                <CardHeader className="pb-4">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                        isStarMealDish
+                          ? 'bg-amber-500/20'
+                          : 'bg-accent/20'
+                      }`}
+                    >
+                      {isStarMealDish ? (
+                        <Star className="w-5 h-5 text-amber-600 dark:text-amber-500 fill-amber-600 dark:fill-amber-500" />
+                      ) : (
+                        <ChefHat className="w-5 h-5 text-accent-foreground" />
+                      )}
                     </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {formatNutritionValue(dish.nutritionSummary.protein)}g
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Protein</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {formatNutritionValue(dish.nutritionSummary.carbohydrates)}g
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Carbs</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {formatNutritionValue(dish.nutritionSummary.fats)}g
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Fats</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {formatNutritionValue(dish.nutritionSummary.sodium)}mg
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Sodium</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CardTitle className="text-2xl">{dish.name}</CardTitle>
+                        {isStarMealDish && (
+                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
+                            Star Meal
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="mt-2 text-base leading-relaxed">
+                        {dish.healthExplanation}
+                      </CardDescription>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Dish Image */}
+                  <DishImage photoReference={dish.photoReference} dishName={dish.name} />
+
+                  <Separator />
+
+                  {/* Ingredients */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                        1
+                      </span>
+                      Ingredients
+                    </h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-8">
+                      {dish.ingredients.map((ingredient, idx) => (
+                        <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>{ingredient}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Separator />
+
+                  {/* Instructions */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                        2
+                      </span>
+                      Cooking Instructions
+                    </h3>
+                    <ol className="space-y-3 pl-8">
+                      {dish.instructions.map((instruction, idx) => (
+                        <li key={idx} className="text-sm text-muted-foreground flex gap-3">
+                          <span className="font-semibold text-primary shrink-0">{idx + 1}.</span>
+                          <span>{instruction}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <Separator />
+
+                  {/* Nutrition Summary */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                        3
+                      </span>
+                      Nutrition Summary
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-muted/30 rounded-lg p-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatNutritionValue(dish.nutritionSummary.calories)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Calories</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatNutritionValue(dish.nutritionSummary.protein)}g
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Protein</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatNutritionValue(dish.nutritionSummary.carbohydrates)}g
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Carbs</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatNutritionValue(dish.nutritionSummary.fats)}g
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Fats</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatNutritionValue(dish.nutritionSummary.sodium)}mg
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Sodium</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
-  "summary": "Build a mobile health-focused app where users enter age, weight, blood pressure, health conditions (from an expanded selectable list), and allergies (including a “No allergies” option), then tap a “Search Foods” button to receive 1–5 allergen-safe food recommendations that include photos, health explanations, ingredients, cooking steps, nutrition summaries, and a medical disclaimer.",
+  "projectStateVersion": 17,
+  "summary": "Build a mobile health-focused app where users enter age, weight, blood pressure, health conditions (from an expanded selectable list), allergies (including a “No allergies” option), and optionally a favorite food, then tap a “Search Foods” button to receive 1–5 allergen-safe food recommendations (including a “Star Meal” that highlights the user’s favorite food) with photos, health explanations, ingredients, cooking steps, nutrition summaries, and a medical disclaimer.",
   "architectural_notes": [
     "Need a strategy for dish photos in results (e.g., generated/static assets vs external image URLs) consistent with 'do not serve images from backend' constraint.",
     "Backend currently has an empty in-memory recipe database; add a seed dataset (and consider a scalable storage approach later) so recommendations can be returned.",
@@ -14,8 +14,7 @@
     "Tiger-themed decorative elements are not appearing in the UI as expected.",
     "Soundtrack/play button does not produce audio (background music not playing) even when the user presses play."
   ],
-  "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Tiger decal illustration, left corner variant (tiger-decal-left.dim_256x256.png)\n- Tiger decal illustration, right corner variant (tiger-decal-right.dim_256x256.png)\n- Small tiger icon illustration (tiger-icon.dim_128x128.png)",
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-build-a-frontend-flow-with-a-health-input-form-age-weight-sicknesses-health-conditions-systolic-and-diastolic-blood-pressure-and-a-primary-button-labeled-exactly-search-foods-that-triggers-fetching-recommendations-and-then-displays-the-results",
@@ -150,6 +149,30 @@
       "title": "Fix the soundtrack play behavior so that pressing the Play control produces audible audio (when not muted) and does not fail silently. The soundtrack must be loaded from the existing path referenced in `frontend/src/components/SoundtrackControls.tsx`: `/assets/audio/barrera-healthy-eats-theme.mp3`.",
       "reqIds": [
         "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-optional-favorite-food-text-input-to-the-health-input-form-so-a-user-can-enter-their-favorite-food-before-pressing-the-existing-primary-button-labeled-exactly-search-foods",
+      "title": "Add a new optional \"Favorite food\" text input to the health input form so a user can enter their favorite food before pressing the existing primary button labeled exactly “Search Foods”.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-frontend-form-data-model-and-recommendation-request-to-include-an-optional-favoritefood-string-and-update-the-backend-canister-method-signature-used-by-the-frontend-to-accept-this-new-parameter-when-fetching-recommendations",
+      "title": "Extend the frontend form data model and recommendation request to include an optional `favoriteFood` string, and update the backend canister method signature used by the frontend to accept this new parameter when fetching recommendations.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-results-ui-to-visibly-highlight-the-star-meal-in-the-recommendations-results-and-show-the-user-s-favorite-food-name-while-keeping-all-user-facing-text-in-english",
+      "title": "Update the results UI to visibly highlight the “Star Meal” in the recommendations results (and show the user’s favorite food name), while keeping all user-facing text in English.",
+      "reqIds": [
+        "REQ-29"
       ],
       "version": 1
     }
@@ -294,6 +317,20 @@
       "summary": "Ensure the soundtrack audio asset exists in the frontend public assets path at the exact URL used by the app: `/assets/audio/barrera-healthy-eats-theme.mp3`.",
       "reqIds": [
         "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Add a Favorite Food input and show a “Star Meal” result that highlights the user’s favorite food with ingredients/preparation guidance aligned to their health inputs",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Implement backend recommendation behavior so that when a user provides a non-empty favorite food, the returned recommendations include a dedicated “Star Meal” entry based on that favorite food, including a health explanation, ingredient list, cooking instructions, and nutrition summary.",
+      "reqIds": [
+        "REQ-28"
       ],
       "status": "pending"
     }

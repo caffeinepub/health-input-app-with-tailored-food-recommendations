@@ -1,8 +1,8 @@
 import Text "mo:core/Text";
 import Map "mo:core/Map";
 import Set "mo:core/Set";
-import Iter "mo:core/Iter";
 import Array "mo:core/Array";
+import Iter "mo:core/Iter";
 
 actor {
   type Dish = {
@@ -28,6 +28,7 @@ actor {
     healthConditions : [Text];
     bloodPressure : BloodPressureCategory;
     allergies : [Text];
+    favoriteFood : ?Text; // New field for favorite food
   };
 
   type BloodPressureCategory = {
@@ -65,28 +66,37 @@ actor {
     systolicBP : Nat,
     diastolicBP : Nat,
     allergies : [Text],
+    favoriteFood : ?Text,
   ) : async [Dish] {
+    // If no allergies, return all recipes or a limited number if there are many
     if (allergies.size() == 0) {
-      // No allergies specified, return all recipes or a limited number if there are many
-      return getLimitedRecipes(50); // You can adjust this limit as needed
+      let recipes = switch (favoriteFood) {
+        case (null) { getLimitedRecipes(50) };
+        case (?favoriteText) {
+          if (favoriteText == "") {
+            getLimitedRecipes(50);
+          } else {
+            createStarMealAndAppendToRecipes(favoriteText);
+          };
+        };
+      };
+      return recipes;
     };
 
-    // Convert allergies to a lower-case Set for case-insensitive comparison
+    // Convert allergies to a lower-case Set for comparison
     let allergySet = Set.fromArray(
       allergies.map(func(a) { a.toLower() })
     );
 
-    // Filter recipes that do not contain any of the specified allergens
+    // Filter recipes for compatibility with the allergySet
     let filteredRecipes = recipeDatabase.values().filter(
       func(recipe) {
-        // Check if any ingredient in the recipe matches the allergies (case-insensitive)
         let hasAllergy = recipe.ingredients.any(
           func(ingredient) {
             let lowerIngredient = ingredient.toLower();
             switch (allergySet.contains(lowerIngredient)) {
               case (true) { true };
               case (false) {
-                // Also check if ingredient contains any allergy substring
                 allergies.any(
                   func(allergy) {
                     lowerIngredient.contains(#text(allergy.toLower()));
@@ -100,14 +110,23 @@ actor {
       }
     );
 
-    // Limit the number of results to 50
+    // Limit the number of results
     let limitedFilteredRecipes = filteredRecipes.toArray().sliceToArray(0, 50);
 
     if (limitedFilteredRecipes.size() == 0) {
-      // If no recipes match after filtering, return empty array
+      // If no compatible recipes are found after filtering, return empty array
       [];
     } else {
-      limitedFilteredRecipes;
+      switch (favoriteFood) {
+        case (null) { limitedFilteredRecipes };
+        case (?favoriteText) {
+          if (favoriteText == "") {
+            limitedFilteredRecipes;
+          } else {
+            createStarMealAndAppendToFilteredRecipes(favoriteText, limitedFilteredRecipes);
+          };
+        };
+      };
     };
   };
 
@@ -118,6 +137,21 @@ actor {
     } else {
       allRecipes.sliceToArray(0, limit);
     };
+  };
+
+  func createStarMealAndAppendToRecipes(favoriteFood : Text) : [Dish] {
+    let starMeal = createStarMeal(favoriteFood, "A healthy version of your favorite meal!");
+    let limitedRecipes = getLimitedRecipes(50);
+    if (limitedRecipes.size() == 0) {
+      [starMeal];
+    } else {
+      limitedRecipes.concat([starMeal]);
+    };
+  };
+
+  func createStarMealAndAppendToFilteredRecipes(favoriteFood : Text, filteredRecipes : [Dish]) : [Dish] {
+    let starMeal = createStarMeal(favoriteFood, "A healthy version of your favorite meal!");
+    filteredRecipes.concat([starMeal]);
   };
 
   public query ({ caller }) func getGreyZoneIngredients() : async [Text] {
@@ -132,5 +166,46 @@ actor {
       "Mushrooms",
       "Strawberries",
     ];
+  };
+
+  func createStarMeal(food : Text, explanation : Text) : Dish {
+    {
+      name = "Star Meal: " # food;
+      photoReference = "https://picsum.photos/20" # food;
+      healthExplanation = explanation # ". This meal is tailored to fit your dietary needs while still allowing you to enjoy " # food # ".";
+      ingredients = generateIngredients(food);
+      instructions = generateInstructions(food);
+      nutritionSummary = calculateNutrition(food);
+    };
+  };
+
+  func generateIngredients(food : Text) : [Text] {
+    [
+      "Main ingredient: " # food,
+      "Supplemented with healthy grains",
+      "Fresh veggies",
+      "Low sodium seasoning",
+      "Olive oil",
+    ];
+  };
+
+  func generateInstructions(food : Text) : [Text] {
+    [
+      "Start by prepping your main ingredient: " # food,
+      "Cook grains according to package instructions",
+      "Chop veggies and saute them in non-stick pan",
+      "Season everything after removing from heat",
+      "Serve immediately for best flavor",
+    ];
+  };
+
+  func calculateNutrition(food : Text) : NutritionSummary {
+    {
+      calories = 350;
+      sodium = 100;
+      protein = 25;
+      carbohydrates = 45;
+      fats = 15;
+    };
   };
 };

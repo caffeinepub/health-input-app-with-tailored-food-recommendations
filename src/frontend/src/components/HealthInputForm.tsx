@@ -96,6 +96,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
   const [noAllergies, setNoAllergies] = useState(initialData.allergies.length === 0);
   const [systolicBP, setSystolicBP] = useState(initialData.systolicBP);
   const [diastolicBP, setDiastolicBP] = useState(initialData.diastolicBP);
+  const [favoriteFood, setFavoriteFood] = useState(initialData.favoriteFood);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const { mutate: getFoodRecommendations, isPending } = useFoodRecommendations();
@@ -191,6 +192,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
       systolicBP,
       diastolicBP,
       allergies: noAllergies ? [] : allergies,
+      favoriteFood: favoriteFood.trim(),
     };
 
     const error = validateHealthInput(formData);
@@ -207,6 +209,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
         systolicBP: BigInt(systolicBP),
         diastolicBP: BigInt(diastolicBP),
         allergies: noAllergies ? [] : allergies,
+        favoriteFood: favoriteFood.trim(),
       },
       {
         onSuccess: (recommendations) => {
@@ -348,7 +351,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                   <div className="border border-border rounded-lg p-3 bg-muted/30 max-h-48 overflow-y-auto">
                     <p className="text-xs text-muted-foreground mb-2">Quick add:</p>
                     <div className="flex flex-wrap gap-2">
-                      {filteredConditions.slice(0, 10).map((condition) => (
+                      {filteredConditions.slice(0, 20).map((condition) => (
                         <Button
                           key={condition}
                           type="button"
@@ -370,14 +373,14 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
 
                 {/* Selected Conditions */}
                 {healthConditions.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
+                  <div className="flex flex-wrap gap-2 p-3 bg-muted/20 rounded-lg">
                     {healthConditions.map((condition) => (
                       <Badge key={condition} variant="secondary" className="gap-1 pr-1">
                         {condition}
                         <button
                           type="button"
                           onClick={() => handleRemoveCondition(condition)}
-                          className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                          className="ml-1 hover:bg-muted rounded-full p-0.5"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -392,7 +395,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
           {/* Allergies */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Food Allergies</Label>
+              <Label>Allergies</Label>
               <Button
                 type="button"
                 variant={noAllergies ? 'default' : 'outline'}
@@ -409,7 +412,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                 {/* Add Custom Allergy */}
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Add custom allergy..."
+                    placeholder="Enter allergy..."
                     value={allergyInput}
                     onChange={(e) => setAllergyInput(e.target.value)}
                     onKeyPress={handleAllergyKeyPress}
@@ -456,7 +459,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                         <button
                           type="button"
                           onClick={() => handleRemoveAllergy(allergy)}
-                          className="ml-1 hover:bg-destructive/40 rounded-full p-0.5"
+                          className="ml-1 hover:bg-destructive/80 rounded-full p-0.5"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -466,6 +469,21 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
                 )}
               </>
             )}
+          </div>
+
+          {/* Favorite Food */}
+          <div className="space-y-2">
+            <Label htmlFor="favoriteFood">Favorite food (optional)</Label>
+            <Input
+              id="favoriteFood"
+              type="text"
+              placeholder="e.g., Pizza, Tacos, Sushi..."
+              value={favoriteFood}
+              onChange={(e) => setFavoriteFood(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              We'll create a healthy version of your favorite food as a Star Meal!
+            </p>
           </div>
 
           {/* Validation Error */}
@@ -480,7 +498,7 @@ export function HealthInputForm({ initialData, onSubmit }: HealthInputFormProps)
             {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Searching Foods...
+                Searching...
               </>
             ) : (
               'Search Foods'

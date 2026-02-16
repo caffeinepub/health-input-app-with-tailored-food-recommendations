@@ -1,14 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Restore missing hero tiger decal decorations and make the header Play control reliably produce audible soundtrack playback with clear user-facing errors when playback fails.
+**Goal:** Let users optionally enter a favorite food and, when provided, receive a highlighted “Star Meal” recommendation based on that favorite food.
 
 **Planned changes:**
-- Ensure the hero section in `frontend/src/App.tsx` loads and displays two tiger decal images from `/assets/generated/tiger-decal-left.dim_256x256.png` and `/assets/generated/tiger-decal-right.dim_256x256.png` on the initial (non-results) screen.
-- Add a safe fallback so if a decal image fails to load, its image element is hidden (no broken-image UI is shown).
-- Add/verify the required static tiger decal assets exist under `frontend/public/assets/generated/` with the exact filenames used by the app.
-- Fix `frontend/src/components/SoundtrackControls.tsx` so clicking Play starts audible playback within ~1 second when allowed/unmuted, and the Play/Pause icon matches the actual playback state.
-- If soundtrack playback fails (blocked/missing/etc.), show a clear English user-facing message (not console-only).
-- Ensure the soundtrack file exists and is served as a frontend static asset from `/assets/audio/barrera-healthy-eats-theme.mp3` (placed at `frontend/public/assets/audio/barrera-healthy-eats-theme.mp3`).
+- Add an optional “Favorite food” text input to the existing health input form without changing the primary button label (“Search Foods”).
+- Extend the frontend form data and recommendation request payload to include an optional `favoriteFood` string.
+- Update the backend `getFoodRecommendations` method signature to accept the additional favorite food parameter and regenerate/update frontend bindings so types match.
+- Implement backend logic to include a dedicated “Star Meal” Dish when `favoriteFood` is non-empty (trimmed), including health explanation, ingredients, instructions, and nutrition summary, while respecting allergy constraints.
+- Update results UI to prominently highlight the Star Meal (badge/label “Star Meal”) and display the favorite food name in English.
 
-**User-visible outcome:** On initial load, the hero shows two subtle tiger decal decorations without broken-image placeholders, and the header Play button starts the background music (or shows a clear message if audio can’t be played).
+**User-visible outcome:** Users can (optionally) type a favorite food before pressing “Search Foods”; if provided, results include a clearly highlighted “Star Meal” entry showing that favorite food with details, while leaving the app’s behavior unchanged when the field is empty.

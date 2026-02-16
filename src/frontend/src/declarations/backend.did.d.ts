@@ -31,7 +31,15 @@ export interface _SERVICE {
     undefined
   >,
   'getFoodRecommendations' : ActorMethod<
-    [bigint, bigint, Array<string>, bigint, bigint, Array<string>],
+    [
+      bigint,
+      bigint,
+      Array<string>,
+      bigint,
+      bigint,
+      Array<string>,
+      [] | [string],
+    ],
     Array<Dish>
   >,
   'getGreyZoneIngredients' : ActorMethod<[], Array<string>>,

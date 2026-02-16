@@ -9,6 +9,7 @@ interface GetFoodRecommendationsParams {
   systolicBP: bigint;
   diastolicBP: bigint;
   allergies: string[];
+  favoriteFood: string;
 }
 
 export function useFoodRecommendations() {
@@ -25,7 +26,8 @@ export function useFoodRecommendations() {
         params.healthConditions,
         params.systolicBP,
         params.diastolicBP,
-        params.allergies
+        params.allergies,
+        params.favoriteFood || null
       );
     },
   });
